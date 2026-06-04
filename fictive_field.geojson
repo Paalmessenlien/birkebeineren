@@ -1,0 +1,625 @@
+{
+"type": "FeatureCollection",
+"metadata": {
+"name": "Feltbane (forslag)",
+"targets": 12,
+"max_distance_m": 60,
+"overshoot_zone_m": 50.0,
+"principle": "radial fan, fires E->SE into forest/lake, away from disc golf",
+"wa_reference": "World Archery field (12-target unit, marked <=60 m)"
+},
+"features": [
+{
+"type": "Feature",
+"properties": {
+"station": "1",
+"distance": 20,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.51702059544424,
+61.141001132032905
+],
+[
+10.517336257397686,
+61.141096338512284
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "1"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.51702059544424,
+61.141001132032905
+],
+[
+10.51795328466017,
+61.14146731329562
+],
+[
+10.518297539902422,
+61.14120139612586
+],
+[
+10.51702059544424,
+61.141001132032905
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "2",
+"distance": 28,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.517049616692436,
+61.14072813812836
+],
+[
+10.51751798767276,
+61.140838400364345
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "2"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.517049616692436,
+61.14072813812836
+],
+[
+10.518195700063762,
+61.14119231637452
+],
+[
+10.518513028782914,
+61.140878278054124
+],
+[
+10.517049616692436,
+61.14072813812836
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "3",
+"distance": 42,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.517165461995255,
+61.140494220465335
+],
+[
+10.517899987478284,
+61.1406232614824
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "3"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.517165461995255,
+61.140494220465335
+],
+[
+10.518628412667931,
+61.14097051123208
+],
+[
+10.518920432486322,
+61.14058325224955
+],
+[
+10.517165461995255,
+61.140494220465335
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "4",
+"distance": 55,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.517175482661228,
+61.140214436967206
+],
+[
+10.518172857442694,
+61.14032557879247
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "4"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.517175482661228,
+61.140214436967206
+],
+[
+10.518969959367563,
+61.1406557621886
+],
+[
+10.5191891642114,
+61.14019747144229
+],
+[
+10.517175482661228,
+61.140214436967206
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "5",
+"distance": 33,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.517051045680224,
+61.13994210208458
+],
+[
+10.517661847116292,
+61.13997308878318
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "5"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.517051045680224,
+61.13994210208458
+],
+[
+10.518547045533435,
+61.1402049184838
+],
+[
+10.518627562141786,
+61.13983515816921
+],
+[
+10.517051045680224,
+61.13994210208458
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "6",
+"distance": 60,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.516453902395163,
+61.13966438973316
+],
+[
+10.517569887427644,
+61.139645579368434
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "6"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.516453902395163,
+61.13966438973316
+],
+[
+10.518517688676607,
+61.13987612552591
+],
+[
+10.518482061232813,
+61.13938368260306
+],
+[
+10.516453902395163,
+61.13966438973316
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "7",
+"distance": 24,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.516287944635224,
+61.13942865509406
+],
+[
+10.516727824883278,
+61.13939121747041
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "7"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.516287944635224,
+61.13942865509406
+],
+[
+10.517703869315135,
+61.1394764453022
+],
+[
+10.517584614818317,
+61.13914999954011
+],
+[
+10.516287944635224,
+61.13942865509406
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "8",
+"distance": 48,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.516001376086024,
+61.13922294331979
+],
+[
+10.516850985514914,
+61.139089698478514
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "8"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.516001376086024,
+61.13922294331979
+],
+[
+10.517876519581042,
+61.13915965358468
+],
+[
+10.51759547109231,
+61.138742149953046
+],
+[
+10.516001376086024,
+61.13922294331979
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "9",
+"distance": 38,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.515548496037248,
+61.13907743702997
+],
+[
+10.516184142367688,
+61.13892779542398
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "9"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.515548496037248,
+61.13907743702997
+],
+[
+10.517199525062402,
+61.13890804839577
+],
+[
+10.516841513174128,
+61.138553748752244
+],
+[
+10.515548496037248,
+61.13907743702997
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "10",
+"distance": 58,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.515159005913358,
+61.138955841530155
+],
+[
+10.516053904799838,
+61.13866449057434
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "10"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.515159005913358,
+61.138955841530155
+],
+[
+10.517105608131994,
+61.138613863564906
+],
+[
+10.516545130582301,
+61.13821278834962
+],
+[
+10.515159005913358,
+61.138955841530155
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "11",
+"distance": 30,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.514720665037228,
+61.13888838535953
+],
+[
+10.515135587047606,
+61.13870805910916
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "11"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.514720665037228,
+61.13888838535953
+],
+[
+10.516075519218566,
+61.138540671531864
+],
+[
+10.515578728244568,
+61.138274359185246
+],
+[
+10.514720665037228,
+61.13888838535953
+]
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"station": "12",
+"distance": 45,
+"layer": "felt (forslag)"
+},
+"geometry": {
+"type": "LineString",
+"coordinates": [
+[
+10.514345777361925,
+61.13883296941481
+],
+[
+10.514884111314029,
+61.1385233035871
+]
+]
+}
+},
+{
+"type": "Feature",
+"properties": {
+"kind": "safety",
+"station": "12"
+},
+"geometry": {
+"type": "Polygon",
+"coordinates": [
+[
+[
+10.514345777361925,
+61.13883296941481
+],
+[
+10.51581995185306,
+61.1383159998518
+],
+[
+10.515144568446338,
+61.1380424610386
+],
+[
+10.514345777361925,
+61.13883296941481
+]
+]
+]
+}
+}
+]
+}

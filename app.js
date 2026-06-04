@@ -229,3 +229,27 @@ fetch('./course.geojson')
       `${fc.metadata.course} – ${fc.metadata.layout} (Kartverket)`;
   })
   .catch((e) => alert('Kunne ikke laste course.geojson: ' + e.message));
+
+// ---- Feltbane (forslag) – fiktiv bueskytingsbane, sikkerhetsvurdert --------
+fetch('./fictive_field.geojson')
+  .then((r) => r.json())
+  .then((fc) => {
+    const group = L.layerGroup();
+    fc.features.forEach((f) => {
+      if (f.properties.kind === 'safety') {
+        L.geoJSON(f, { style: { color: '#c0392b', weight: 1, fillColor: '#e74c3c',
+          fillOpacity: 0.12, opacity: 0.4 } }).addTo(group);
+      } else {
+        const cs = f.geometry.coordinates;
+        L.polyline(cs.map((c) => [c[1], c[0]]),
+          { color: '#0b2e7a', weight: 4, opacity: 0.95, lineCap: 'round' })
+          .bindPopup(`<b>Mål ${f.properties.station}</b><br>${f.properties.distance} m`).addTo(group);
+        const mid = [(cs[0][1] + cs[1][1]) / 2, (cs[0][0] + cs[1][0]) / 2];
+        L.marker(mid, { interactive: false, icon: L.divIcon({ className: 'bue-label',
+          html: `${f.properties.station} <span>${f.properties.distance} m</span>`,
+          iconSize: [0, 0], iconAnchor: [0, 0] }) }).addTo(group);
+      }
+    });
+    layersControl.addOverlay(group, 'Feltbane (forslag)');
+  })
+  .catch(() => {/* fil mangler – hopp over */});

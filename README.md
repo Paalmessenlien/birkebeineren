@@ -34,6 +34,29 @@ en stasjon for å endre nummer/avstand eller slette.
 - **Lagring:** automatisk i nettleserens `localStorage` (per maskin/nettleser).
 - **Eksporter/Importer:** GeoJSON-fil, for backup eller flytting mellom maskiner.
 
+## Feltbane (forslag) – fiktiv bueskytingsbane
+
+`fictive_field.geojson` + laget **«Feltbane (forslag)»** i kartvisningen er et
+sikkerhetsvurdert forslag til en 12-måls feltbane (World Archery field-prinsipp,
+markerte avstander ≤ 60 m), lagt slik at den kan dele området med discgolfbanen.
+
+**Sikkerhetsprinsipp (viktigst):** Alle baner skyter **utover, vekk fra
+discgolf-spillefeltet**, slik at både pil-bane og overskytingssone (50 m bak
+blinken) lander i skog/vann – aldri tilbake mot discgolfere.
+
+- Skuddretning kun mot **øst→sørøst** (skog + innsjøen som naturlig bakstopp).
+  Vest/sørvest (hyttene ved Storhagen, skistadion) og sør (hull 1-korridoren mot
+  Sjøsetervegen) brukes **aldri** som skuddretning.
+- Vifteformet («diverging fan») oppsett: banene spriker, så ingen bane peker mot
+  en annen skytters standplass.
+- Hver standplass ligger ≥ 22 m utenfor discgolf-feltet. Korteste avstand fra en
+  skuddsone til nærmeste discgolf-punkt i forslaget er **> 200 m**.
+- De røde viftene i kartet er **sikkerhetssonene** – de skal aldri overlappe
+  discgolf eller stier.
+
+Forslaget kan åpnes i `editor.html` (Importer → `fictive_field.geojson`) og
+justeres fritt.
+
 ## Hosting på GitHub Pages
 
 Fungerer som det er – GitHub Pages serverer statiske filer.
