@@ -239,6 +239,11 @@ fetch('./fictive_field.geojson')
       if (f.properties.kind === 'safety') {
         L.geoJSON(f, { style: { color: '#c0392b', weight: 1, fillColor: '#e74c3c',
           fillOpacity: 0.12, opacity: 0.4 } }).addTo(group);
+      } else if (f.properties.kind === 'route') {
+        // walking route between shooting positions (4 → … → 18)
+        L.polyline(f.geometry.coordinates.map((c) => [c[1], c[0]]),
+          { color: '#1f7a1f', weight: 3, opacity: 0.85, dashArray: '2 8', lineCap: 'round' })
+          .bindPopup('Gangrute (rekkefølge 1→12)').addTo(group);
       } else {
         const cs = f.geometry.coordinates;
         L.polyline(cs.map((c) => [c[1], c[0]]),

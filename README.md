@@ -53,11 +53,16 @@ løypa, så ingen skyter/kaster mot der den andre går. Sikkerheten ligger i
 - Hver skytebane er lagt **~26 m til siden** for fairwayen, på siden med best
   klaring. Minste laterale klaring til nærmeste discgolf-punkt: **13–22 m**
   (i tillegg til forskyvningen).
-- **Start ved hull 4, slutt ved hull 17.** Stasjon 11 er et **langskudd (60 m)
-  i det åpne området under hull 16**.
-- 12 mål fordelt på discgolfhull 4, 6, 7, 8, 9 (to standplasser), 10, 12, 13, 14
-  og 17 – kun hull som ligger innenfor 51/1 / 57/5. Avstander 30–60 m.
-- De røde korridorene i kartet er **sikkerhetssonene**.
+- **Gangrekkefølge optimalisert** (2-opt) for kortest gange – grønn stiplet
+  **gangrute** i kartet viser rekkefølgen 1→12 (≈1,3 km totalt).
+- **Start ved hull 4.** **Stasjon 12 ligger på hull 18s utkast og skyter samme
+  retning som hull 18 kastes (SW)** – innenfor 51/1 (klaring 9 m, banens
+  trangeste; krever god standplass-etikette).
+- Stasjon 11 er et **langskudd (60 m) i det åpne området under hull 16**, vendt
+  NNØ bort fra hyttene i vest og vegen i sør.
+- 12 mål på discgolfhull 4, 6, 7, 8, 9, 10, 12, 13, 14, 17, 18 + langskuddet –
+  kun innenfor 51/1 / 57/5. Avstander 30–60 m.
+- De røde korridorene er **sikkerhetssonene**; den grønne stiplete linja er gangruta.
 
 > Dette er et delt-areal-oppsett med *forvaltet* risiko: det forutsetter
 > etikette om at man bare skyter/kaster når den parallelle korridoren foran er
