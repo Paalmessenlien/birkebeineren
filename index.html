@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Birkebeineren Discgolfpark – Lilla Main (Kartverket)</title>
+
+  <!-- Leaflet from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <style>
+    html, body { margin: 0; height: 100%; }
+    #map { height: 100%; width: 100%; }
+
+    /* Basket = ringed target with a hole-number badge to its upper-right */
+    .basket-div { background: none; border: 0; }
+    .basket-wrap { position: relative; width: 16px; height: 16px; }
+    .basket-icon {
+      width: 16px; height: 16px; box-sizing: border-box;
+      border: 3px solid #111; border-radius: 50%;
+      background: #fff; box-shadow: 0 0 0 2px #fff;
+    }
+    .hole-badge {
+      position: absolute; left: 14px; top: -10px;
+      font: 700 11px/16px system-ui, sans-serif;
+      color: #fff; background: #111; border-radius: 8px;
+      padding: 0 5px; white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+    /* gnr/bnr parcel-number labels */
+    .mnr-label {
+      font: 700 12px/1 system-ui, sans-serif;
+      color: #b30059; white-space: nowrap;
+      text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;
+      transform: translate(-50%, -50%);
+    }
+    /* Felt bueskyting – stasjonsetiketter */
+    .bue-label {
+      font: 700 13px/1 system-ui, sans-serif; color: #fff;
+      background: #0b2e7a; border-radius: 9px; padding: 2px 7px;
+      white-space: nowrap; transform: translate(-50%, -50%);
+      box-shadow: 0 1px 3px rgba(0,0,0,.5);
+    }
+    .bue-label span { font-weight: 400; font-size: 11px; opacity: .9; }
+    #editlink { position: absolute; bottom: 16px; left: 16px; z-index: 1000;
+      background: #0b2e7a; color: #fff; text-decoration: none;
+      padding: 8px 12px; border-radius: 8px; font: 600 13px system-ui, sans-serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+    .leaflet-popup-content { font: 13px/1.4 system-ui, sans-serif; }
+    .leaflet-popup-content b { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <a href="./editor.html" id="editlink">🎯 Rediger feltbane</a>
+  <script src="./app.js"></script>
+</body>
+</html>

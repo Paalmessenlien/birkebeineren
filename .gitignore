@@ -1,0 +1,10 @@
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# working screenshots (not part of the app)
+birkebeineren-*.png
+editor.png
+
+# source photos used to digitise the felt course (not needed by the app)
+*.jpeg
+*.jpg
