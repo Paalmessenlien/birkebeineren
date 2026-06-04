@@ -21,6 +21,30 @@ window.map = map; // exposed for debugging
 L.control.layers({ 'Topografisk': topo, 'Gråtone': gray, 'Satellitt': sat }, null,
   { collapsed: true }).addTo(map);
 
+// "Show my location" (works over HTTPS) — handy for placing stations on-site
+(function addLocate() {
+  let watching = false, marker = null, circle = null;
+  const Ctl = L.Control.extend({ options: { position: 'topleft' }, onAdd() {
+    const a = L.DomUtil.create('a', 'leaflet-bar leaflet-control locate-btn');
+    a.href = '#'; a.title = 'Vis min posisjon'; a.textContent = '📍';
+    L.DomEvent.on(a, 'click', L.DomEvent.stop);
+    L.DomEvent.on(a, 'click', () => {
+      watching = !watching; a.classList.toggle('active', watching);
+      if (watching) map.locate({ watch: true, setView: true, maxZoom: 18, enableHighAccuracy: true });
+      else { map.stopLocate(); if (marker) { map.removeLayer(marker); marker = null; } if (circle) { map.removeLayer(circle); circle = null; } }
+    });
+    return a;
+  } });
+  map.addControl(new Ctl());
+  map.on('locationfound', (e) => {
+    if (!marker) marker = L.circleMarker(e.latlng, { radius: 7, color: '#fff', weight: 2, fillColor: '#1a73e8', fillOpacity: 1 }).addTo(map);
+    else marker.setLatLng(e.latlng);
+    if (!circle) circle = L.circle(e.latlng, { radius: e.accuracy, color: '#1a73e8', weight: 1, fillOpacity: 0.1 }).addTo(map);
+    else { circle.setLatLng(e.latlng); circle.setRadius(e.accuracy); }
+  });
+  map.on('locationerror', (e) => alert('Fant ikke posisjon: ' + e.message));
+})();
+
 // ---- State -----------------------------------------------------------------
 const STORE_KEY = 'feltbane_v1';
 let stations = [];          // { number, distance, peg:[lat,lng], target:[lat,lng] }
