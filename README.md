@@ -34,25 +34,32 @@ en stasjon for å endre nummer/avstand eller slette.
 - **Lagring:** automatisk i nettleserens `localStorage` (per maskin/nettleser).
 - **Eksporter/Importer:** GeoJSON-fil, for backup eller flytting mellom maskiner.
 
-## Feltbane (forslag) – fiktiv bueskytingsbane
+## Feltbane (forslag) – fiktiv bueskytingsbane sammen med discgolf
 
-`fictive_field.geojson` + laget **«Feltbane (forslag)»** i kartvisningen er et
-sikkerhetsvurdert forslag til en 12-måls feltbane (World Archery field-prinsipp,
-markerte avstander ≤ 60 m), lagt slik at den kan dele området med discgolfbanen.
+`fictive_field.geojson` + laget **«Feltbane (forslag)»** er et sikkerhetsvurdert
+forslag til en 12-måls feltbane (World Archery field-prinsipp, markerte avstander
+≤ 60 m) som **deler løypa med discgolfbanen**.
 
-**Sikkerhetsprinsipp (viktigst):** Alle baner skyter **utover, vekk fra
-discgolf-spillefeltet**, slik at både pil-bane og overskytingssone (50 m bak
-blinken) lander i skog/vann – aldri tilbake mot discgolfere.
+**Prinsipp:** Pilskyting skjer **parallelt med og i samme retning som
+discgolf-kastet** på hvert hull – begge aktiviteter beveger seg samme vei nedover
+løypa, så ingen skyter/kaster mot der den andre går. Sikkerheten ligger i
+**sideforskyvning**:
 
-- Skuddretning kun mot **øst→sørøst** (skog + innsjøen som naturlig bakstopp).
-  Vest/sørvest (hyttene ved Storhagen, skistadion) og sør (hull 1-korridoren mot
-  Sjøsetervegen) brukes **aldri** som skuddretning.
-- Vifteformet («diverging fan») oppsett: banene spriker, så ingen bane peker mot
-  en annen skytters standplass.
-- Hver standplass ligger ≥ 22 m utenfor discgolf-feltet. Korteste avstand fra en
-  skuddsone til nærmeste discgolf-punkt i forslaget er **> 200 m**.
-- De røde viftene i kartet er **sikkerhetssonene** – de skal aldri overlappe
-  discgolf eller stier.
+- Hver skytebane er lagt **32 m til siden** for fairwayen, på den siden med best
+  klaring (sjekket mot både eget og nabohull).
+- Korridor + overskytingssone (40 m) holdes innenfor sidestripen – aldri inn på
+  en fairway eller sti. Minste laterale klaring til nærmeste discgolf-punkt er
+  **10,8–26,7 m** (i tillegg til 32 m forskyvning).
+- Skyteavstand maks 60 m, blinken står kort for kurven så oversoner ligger
+  ved siden av, ikke på, greenen.
+- Banen bruker 12 av 18 discgolfhull (1,2,3,4,5,7,8,9,13,14,17,18); de øvrige 6
+  ligger for tett inntil nabohull til å gi trygg klaring.
+- De røde korridorene i kartet er **sikkerhetssonene**.
+
+> Dette er et delt-areal-oppsett med *forvaltet* risiko: det forutsetter
+> etikette om at man bare skyter/kaster når den parallelle korridoren foran er
+> klar. Skal aktivitetene kunne foregå helt uavhengig samtidig, må de skilles
+> fysisk.
 
 Forslaget kan åpnes i `editor.html` (Importer → `fictive_field.geojson`) og
 justeres fritt.
