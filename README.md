@@ -45,15 +45,18 @@ discgolf-kastet** på hvert hull – begge aktiviteter beveger seg samme vei ned
 løypa, så ingen skyter/kaster mot der den andre går. Sikkerheten ligger i
 **sideforskyvning**:
 
-- Hver skytebane er lagt **32 m til siden** for fairwayen, på den siden med best
-  klaring (sjekket mot både eget og nabohull).
-- Korridor + overskytingssone (40 m) holdes innenfor sidestripen – aldri inn på
-  en fairway eller sti. Minste laterale klaring til nærmeste discgolf-punkt er
-  **10,8–26,7 m** (i tillegg til 32 m forskyvning).
-- Skyteavstand maks 60 m, blinken står kort for kurven så oversoner ligger
-  ved siden av, ikke på, greenen.
-- Banen bruker 12 av 18 discgolfhull (1,2,3,4,5,7,8,9,13,14,17,18); de øvrige 6
-  ligger for tett inntil nabohull til å gi trygg klaring.
+- **Hele banen ligger innenfor eiendom 51/1 og 57/5** (sjekket mot Kartverkets
+  matrikkel-WMS, punkt for punkt langs hver korridor).
+- **Ingen skyting over eller mot vei** – korridor + overskytingssone holdes
+  innenfor eiendommene (vegen er eiendomsgrense), og langskuddet er vendt bort
+  fra hyttene i vest og vegen i sør.
+- Hver skytebane er lagt **~26 m til siden** for fairwayen, på siden med best
+  klaring. Minste laterale klaring til nærmeste discgolf-punkt: **13–22 m**
+  (i tillegg til forskyvningen).
+- **Start ved hull 4, slutt ved hull 17.** Stasjon 11 er et **langskudd (60 m)
+  i det åpne området under hull 16**.
+- 12 mål fordelt på discgolfhull 4, 6, 7, 8, 9 (to standplasser), 10, 12, 13, 14
+  og 17 – kun hull som ligger innenfor 51/1 / 57/5. Avstander 30–60 m.
 - De røde korridorene i kartet er **sikkerhetssonene**.
 
 > Dette er et delt-areal-oppsett med *forvaltet* risiko: det forutsetter
