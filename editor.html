@@ -40,35 +40,60 @@
       background: #0b2e7a; border-radius: 9px; padding: 2px 7px; white-space: nowrap;
       box-shadow: 0 1px 3px rgba(0,0,0,.5); }
     .bue-label span { font-weight: 400; font-size: 11px; opacity: .9; }
-    .peg-icon { width: 12px; height: 12px; border: 3px solid #0b2e7a;
-      background: #fff; border-radius: 50%; box-sizing: border-box; }
-    .tgt-icon { width: 16px; height: 16px; border: 3px solid #c0392b;
-      background: #fff; border-radius: 50%; box-sizing: border-box; box-shadow: 0 0 0 2px #fff; }
+    .peg-icon { width: 18px; height: 18px; border: 4px solid #0b2e7a;
+      background: #fff; border-radius: 50%; box-sizing: border-box; cursor: grab;
+      box-shadow: 0 0 0 2px #fff, 0 1px 3px rgba(0,0,0,.4); }
+    .tgt-icon { width: 22px; height: 22px; border: 4px solid #c0392b;
+      background: #fff; border-radius: 50%; box-sizing: border-box; cursor: grab;
+      box-shadow: 0 0 0 2px #fff, 0 1px 3px rgba(0,0,0,.4); }
+    .move-icon { width: 24px; height: 24px; border-radius: 50%; background: #0b2e7a;
+      color: #fff; font-size: 15px; line-height: 24px; text-align: center; cursor: move;
+      box-shadow: 0 0 0 2px #fff, 0 1px 3px rgba(0,0,0,.5); opacity: .9; }
     .edit-form label { display:block; margin:4px 0 2px; font-size:12px; }
     .edit-form input { width: 100%; box-sizing: border-box; padding: 4px; }
     .edit-form .save { background:#0b2e7a;color:#fff;border:0;border-radius:6px;padding:6px;margin-top:8px;width:100%;cursor:pointer;}
     .edit-form .del { background:none;border:0;color:#c0392b;cursor:pointer;margin-top:6px;width:100%;}
     .locate-btn { font-size:16px; text-align:center; line-height:26px; text-decoration:none; cursor:pointer; }
     .locate-btn.active { background:#d6e4ff; }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; }
+    #panelToggle { width:26px; height:26px; border:0; border-radius:6px; background:#eef1f6;
+      cursor:pointer; font-size:16px; line-height:1; }
+    #courseName { flex:1; padding:7px; border:1px solid #ccc; border-radius:7px; font-size:13px; min-width:0; }
+    #savedList { margin-top:6px; }
+    .saved-row { display:flex; align-items:center; gap:6px; padding:4px 0; border-top:1px solid #eee; font-size:12px; }
+    .saved-row .nm { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .saved-row button { border:0; border-radius:6px; padding:4px 7px; cursor:pointer; font-size:12px; }
+    .saved-row .load { background:#eef1f6; } .saved-row .del { background:#fff0f0; color:#c0392b; }
   </style>
 </head>
 <body>
   <div id="map"></div>
   <div id="panel">
-    <h1>🎯 Feltbane-editor</h1>
-    <button id="addBtn" class="btn-primary">➕ Ny stasjon</button>
-    <div id="hint">Klikk «Ny stasjon», klikk så <b>skytepunkt</b> og deretter <b>blink</b> i kartet. Avstanden regnes ut automatisk.</div>
-    <div>Stasjoner: <span id="count">0</span></div>
-    <div class="row">
-      <button id="exportBtn" class="btn-light">💾 Eksporter</button>
-      <button id="importBtn" class="btn-light">📂 Importer</button>
+    <div class="panel-head">
+      <h1>🎯 Feltbane-editor</h1>
+      <button id="panelToggle" title="Skjul/vis panel">–</button>
     </div>
-    <button id="clearBtn" class="btn-danger">🗑 Tøm alt</button>
-    <input id="fileInput" type="file" accept=".geojson,application/json" hidden />
-    <label class="chk"><input type="checkbox" id="dgRef" /> Vis discgolfbane (referanse)</label>
-    <label class="chk"><input type="checkbox" id="autosaveInfo" checked disabled /> Lagres automatisk (localStorage)</label>
-    <a href="./index.html" style="display:block;margin-top:8px;font-size:12px;">← Tilbake til kartvisning</a>
+    <div id="panelBody">
+      <button id="addBtn" class="btn-primary">➕ Ny stasjon</button>
+      <div id="hint">Klikk «Ny stasjon», klikk så <b>skytepunkt</b> og deretter <b>blink</b> i kartet. Avstanden regnes ut automatisk.</div>
+      <div>Stasjoner: <span id="count">0</span></div>
+      <div class="row">
+        <input id="courseName" type="text" placeholder="Navn på banen" />
+        <button id="saveBtn" class="btn-primary">💾 Lagre</button>
+      </div>
+      <div class="row">
+        <button id="exportBtn" class="btn-light">⬇ Eksporter</button>
+        <button id="importBtn" class="btn-light">📂 Importer</button>
+      </div>
+      <button id="clearBtn" class="btn-danger">🗑 Tøm tegning</button>
+      <input id="fileInput" type="file" accept=".geojson,application/json" hidden />
+      <div id="savedList"></div>
+      <label class="chk"><input type="checkbox" id="dgRef" /> Vis discgolfbane (referanse)</label>
+      <label class="chk"><input type="checkbox" id="autosaveInfo" checked disabled /> Tegning lagres automatisk</label>
+      <a href="./index.html" style="display:block;margin-top:8px;font-size:12px;">← Tilbake til kartvisning</a>
+    </div>
   </div>
+  <script src="./library.js"></script>
   <script src="./editor.js"></script>
 </body>
 </html>

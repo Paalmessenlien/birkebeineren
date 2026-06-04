@@ -233,34 +233,42 @@ fetch('./course.geojson')
   })
   .catch((e) => alert('Kunne ikke laste course.geojson: ' + e.message));
 
-// ---- Feltbane (forslag) – fiktiv bueskytingsbane, sikkerhetsvurdert --------
+// ---- Render a field-archery FeatureCollection into a toggleable layer ------
+function renderFeltLayer(fc) {
+  const group = L.layerGroup();
+  (fc.features || []).forEach((f) => {
+    if (f.properties.kind === 'safety') {
+      L.geoJSON(f, { style: { color: '#c0392b', weight: 1, fillColor: '#e74c3c',
+        fillOpacity: 0.12, opacity: 0.4 } }).addTo(group);
+    } else if (f.properties.kind === 'route') {
+      L.polyline(f.geometry.coordinates.map((c) => [c[1], c[0]]),
+        { color: '#1f7a1f', weight: 3, opacity: 0.85, dashArray: '2 8', lineCap: 'round' })
+        .bindPopup('Gangrute').addTo(group);
+    } else {
+      const cs = f.geometry.coordinates;
+      L.polyline(cs.map((c) => [c[1], c[0]]),
+        { color: '#0b2e7a', weight: 4, opacity: 0.95, lineCap: 'round' })
+        .bindPopup(`<b>Mål ${f.properties.station}</b><br>${f.properties.distance} m`).addTo(group);
+      const mid = [(cs[0][1] + cs[cs.length-1][1]) / 2, (cs[0][0] + cs[cs.length-1][0]) / 2];
+      L.marker(mid, { interactive: false, icon: L.divIcon({ className: 'bue-label',
+        html: `${f.properties.station} <span>${f.properties.distance} m</span>`,
+        iconSize: [0, 0], iconAnchor: [0, 0] }) }).addTo(group);
+    }
+  });
+  return group;
+}
+
+// Built-in proposal
 fetch('./fictive_field.geojson')
   .then((r) => r.json())
-  .then((fc) => {
-    const group = L.layerGroup();
-    fc.features.forEach((f) => {
-      if (f.properties.kind === 'safety') {
-        L.geoJSON(f, { style: { color: '#c0392b', weight: 1, fillColor: '#e74c3c',
-          fillOpacity: 0.12, opacity: 0.4 } }).addTo(group);
-      } else if (f.properties.kind === 'route') {
-        // walking route between shooting positions (4 → … → 18)
-        L.polyline(f.geometry.coordinates.map((c) => [c[1], c[0]]),
-          { color: '#1f7a1f', weight: 3, opacity: 0.85, dashArray: '2 8', lineCap: 'round' })
-          .bindPopup('Gangrute (rekkefølge 1→12)').addTo(group);
-      } else {
-        const cs = f.geometry.coordinates;
-        L.polyline(cs.map((c) => [c[1], c[0]]),
-          { color: '#0b2e7a', weight: 4, opacity: 0.95, lineCap: 'round' })
-          .bindPopup(`<b>Mål ${f.properties.station}</b><br>${f.properties.distance} m`).addTo(group);
-        const mid = [(cs[0][1] + cs[1][1]) / 2, (cs[0][0] + cs[1][0]) / 2];
-        L.marker(mid, { interactive: false, icon: L.divIcon({ className: 'bue-label',
-          html: `${f.properties.station} <span>${f.properties.distance} m</span>`,
-          iconSize: [0, 0], iconAnchor: [0, 0] }) }).addTo(group);
-      }
-    });
-    layersControl.addOverlay(group, 'Feltbane (forslag)');
-  })
+  .then((fc) => layersControl.addOverlay(renderFeltLayer(fc), 'Feltbane (forslag)'))
   .catch(() => {/* fil mangler – hopp over */});
+
+// Saved courses from the editor (localStorage library) — each its own overlay
+feltLibList().forEach((entry) => {
+  try { layersControl.addOverlay(renderFeltLayer(entry.geojson), '🎯 ' + entry.name); }
+  catch (e) {/* skip malformed */}
+});
 
 // ---- Geolocation: "show my location" + auto-follow toggle (HTTPS only) -----
 function addLocateControl(map) {
