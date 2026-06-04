@@ -21,19 +21,25 @@ window.map = map; // exposed for debugging
 L.control.layers({ 'Topografisk': topo, 'Gråtone': gray, 'Satellitt': sat }, null,
   { collapsed: true }).addTo(map);
 
-// "Show my location" (works over HTTPS) — handy for placing stations on-site
+// "Show my location" + auto-follow toggle (works over HTTPS) — handy on-site
 (function addLocate() {
-  let watching = false, marker = null, circle = null;
+  let watching = false, following = false, marker = null, circle = null, btnLoc, btnFol;
+  function start() { watching = true; btnLoc.classList.add('active'); map.locate({ watch: true, enableHighAccuracy: true }); }
+  function stop() { watching = false; following = false; map.stopLocate(); btnLoc.classList.remove('active'); btnFol.classList.remove('active');
+    if (marker) { map.removeLayer(marker); marker = null; } if (circle) { map.removeLayer(circle); circle = null; } }
   const Ctl = L.Control.extend({ options: { position: 'topleft' }, onAdd() {
-    const a = L.DomUtil.create('a', 'leaflet-bar leaflet-control locate-btn');
-    a.href = '#'; a.title = 'Vis min posisjon'; a.textContent = '📍';
-    L.DomEvent.on(a, 'click', L.DomEvent.stop);
-    L.DomEvent.on(a, 'click', () => {
-      watching = !watching; a.classList.toggle('active', watching);
-      if (watching) map.locate({ watch: true, setView: true, maxZoom: 18, enableHighAccuracy: true });
-      else { map.stopLocate(); if (marker) { map.removeLayer(marker); marker = null; } if (circle) { map.removeLayer(circle); circle = null; } }
+    const div = L.DomUtil.create('div', 'leaflet-bar');
+    btnLoc = L.DomUtil.create('a', 'locate-btn', div); btnLoc.href = '#'; btnLoc.title = 'Vis min posisjon'; btnLoc.textContent = '📍';
+    btnFol = L.DomUtil.create('a', 'locate-btn', div); btnFol.href = '#'; btnFol.title = 'Følg meg (auto-sentrer)'; btnFol.textContent = '🧭';
+    L.DomEvent.on(btnLoc, 'click', L.DomEvent.stop).on(btnLoc, 'click', () => {
+      if (watching) stop(); else { start(); following = true; btnFol.classList.add('active'); }
     });
-    return a;
+    L.DomEvent.on(btnFol, 'click', L.DomEvent.stop).on(btnFol, 'click', () => {
+      if (!watching) start();
+      following = !following; btnFol.classList.toggle('active', following);
+      if (following && marker) map.setView(marker.getLatLng(), Math.max(map.getZoom(), 17));
+    });
+    return div;
   } });
   map.addControl(new Ctl());
   map.on('locationfound', (e) => {
@@ -41,8 +47,10 @@ L.control.layers({ 'Topografisk': topo, 'Gråtone': gray, 'Satellitt': sat }, nu
     else marker.setLatLng(e.latlng);
     if (!circle) circle = L.circle(e.latlng, { radius: e.accuracy, color: '#1a73e8', weight: 1, fillOpacity: 0.1 }).addTo(map);
     else { circle.setLatLng(e.latlng); circle.setRadius(e.accuracy); }
+    if (following) map.setView(e.latlng, Math.max(map.getZoom(), 17), { animate: true });
   });
-  map.on('locationerror', (e) => alert('Fant ikke posisjon: ' + e.message));
+  map.on('locationerror', (e) => { alert('Fant ikke posisjon: ' + e.message); stop(); });
+  map.on('dragstart', () => { if (following) { following = false; btnFol.classList.remove('active'); } });
 })();
 
 // ---- State -----------------------------------------------------------------
