@@ -7,3 +7,6 @@
 # source photos used to digitise the felt course (not needed by the app)
 *.jpeg
 *.jpg
+
+# local Claude Code harness files
+.claude/
