@@ -248,10 +248,10 @@ function renderFeltLayer(fc) {
       const cs = f.geometry.coordinates;
       L.polyline(cs.map((c) => [c[1], c[0]]),
         { color: '#0b2e7a', weight: 4, opacity: 0.95, lineCap: 'round' })
-        .bindPopup(`<b>Mål ${f.properties.station}</b><br>${f.properties.distance} m`).addTo(group);
+        .bindPopup('<b>Mål ' + esc(f.properties.station) + '</b><br>' + esc(f.properties.distance) + ' m').addTo(group);
       const mid = [(cs[0][1] + cs[cs.length-1][1]) / 2, (cs[0][0] + cs[cs.length-1][0]) / 2];
       L.marker(mid, { interactive: false, icon: L.divIcon({ className: 'bue-label',
-        html: `${f.properties.station} <span>${f.properties.distance} m</span>`,
+        html: esc(f.properties.station) + ' <span>' + esc(f.properties.distance) + ' m</span>',
         iconSize: [0, 0], iconAnchor: [0, 0] }) }).addTo(group);
     }
   });
@@ -266,7 +266,7 @@ fetch('./fictive_field.geojson')
 
 // Saved courses from the editor (localStorage library) — each its own overlay
 feltLibList().forEach((entry) => {
-  try { layersControl.addOverlay(renderFeltLayer(entry.geojson), '🎯 ' + entry.name); }
+  try { layersControl.addOverlay(renderFeltLayer(entry.geojson), '🎯 ' + esc(entry.name)); }
   catch (e) {/* skip malformed */}
 });
 

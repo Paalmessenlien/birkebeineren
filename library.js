@@ -6,6 +6,13 @@
  */
 const FELT_LIB_KEY = 'feltbane_library_v1';
 
+// Escape untrusted strings before putting them in HTML (popups, divIcons, the
+// layer-control label). Imported GeoJSON / saved names are untrusted input.
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 function feltLibList() {
   try { return JSON.parse(localStorage.getItem(FELT_LIB_KEY)) || []; }
   catch (e) { return []; }

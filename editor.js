@@ -108,7 +108,7 @@ function render() {
 
     peg.bindTooltip(labelHtml(s), { permanent: true, direction: 'right', offset: [10, 0], className: 'bue-label' });
     const liveLabel = () => peg.setTooltipContent(
-      `${s.number} <span>${liveDist(peg.getLatLng(), tgt.getLatLng())} m</span>`);
+      esc(s.number) + ' <span>' + liveDist(peg.getLatLng(), tgt.getLatLng()) + ' m</span>');
 
     function commit() {
       s.peg = [peg.getLatLng().lat, peg.getLatLng().lng];
@@ -140,15 +140,15 @@ function render() {
   });
   save();
 }
-function labelHtml(s) { return `${s.number} <span>${s.distance} m</span>`; }
+function labelHtml(s) { return esc(s.number) + ' <span>' + esc(s.distance) + ' m</span>'; }
 
 // Edit popup for a station
 function editForm(idx) {
   const s = stations[idx];
   const div = L.DomUtil.create('div', 'edit-form');
   div.innerHTML =
-    `<label>Stasjonsnummer</label><input id="ef-num" value="${s.number}">` +
-    `<label>Avstand (m)</label><input id="ef-dist" type="number" step="0.01" value="${s.distance}">` +
+    `<label>Stasjonsnummer</label><input id="ef-num" value="${esc(s.number)}">` +
+    `<label>Avstand (m)</label><input id="ef-dist" type="number" step="0.01" value="${esc(s.distance)}">` +
     `<button class="save">Lagre</button><button class="del">Slett stasjon</button>`;
   div.querySelector('.save').onclick = () => {
     s.number = div.querySelector('#ef-num').value.trim();
@@ -229,7 +229,7 @@ document.getElementById('fileInput').onchange = (e) => {
       stations = (fc.features || []).map((f) => {
         const c = f.geometry.coordinates;
         return { number: String(f.properties.station ?? ''),
-                 distance: f.properties.distance ?? distOf([c[0][1], c[0][0]], [c[c.length-1][1], c[c.length-1][0]]),
+                 distance: Number(f.properties.distance) || distOf([c[0][1], c[0][0]], [c[c.length-1][1], c[c.length-1][0]]),
                  peg: [c[0][1], c[0][0]], target: [c[c.length-1][1], c[c.length-1][0]] };
       });
       render();
