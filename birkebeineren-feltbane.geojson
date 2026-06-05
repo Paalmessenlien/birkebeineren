@@ -317,38 +317,6 @@
       "type": "Feature",
       "properties": {
         "station": "10",
-        "distance": 9.68,
-        "layer": "felt bueskyting",
-        "name": "3",
-        "targetType": "",
-        "notes": "",
-        "imageUrls": [],
-        "discipline": "field",
-        "z_peg": 516.9,
-        "z_target": 515.4,
-        "slope_deg": -9.3,
-        "backstop_m": null,
-        "overshoot_m": 60,
-        "terrain_note": "nedoverbakke -9° – faresone +10 m"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            10.51344394683838,
-            61.140198952914396
-          ],
-          [
-            10.513610243797304,
-            61.14023259861666
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "station": "11",
         "distance": 21.59,
         "layer": "felt bueskyting",
         "name": "4",
@@ -383,7 +351,7 @@
     {
       "type": "Feature",
       "properties": {
-        "station": "12",
+        "station": "11",
         "distance": 32.01,
         "layer": "felt bueskyting",
         "name": "13",
@@ -418,7 +386,7 @@
     {
       "type": "Feature",
       "properties": {
-        "station": "13",
+        "station": "12",
         "distance": 26.25,
         "layer": "felt bueskyting",
         "name": "",
@@ -452,7 +420,7 @@
     {
       "type": "Feature",
       "properties": {
-        "station": "14",
+        "station": "13",
         "distance": 74.58,
         "layer": "felt bueskyting",
         "name": "",
