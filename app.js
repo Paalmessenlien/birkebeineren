@@ -204,6 +204,7 @@ function styleFairway(feature) {
 // to test whether an archery safety zone overlaps the disc golf course. Felt
 // overlays wait on dgReady so the conflict check has data to test against.
 let dgPoints = [];          // [{ lat, lng, hole }]
+let dgHoleBearing = {};     // hole -> disc golf throw bearing (tee→basket, deg)
 let dgReadyResolve;
 const dgReady = new Promise((res) => { dgReadyResolve = res; });
 
@@ -242,6 +243,12 @@ fetch('./course.geojson')
         dgPoints.push({ lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0], hole: p.hole });
       } else if (p.kind === 'fairway') {
         const cs = f.geometry.coordinates;            // [lng,lat] pairs
+        // Disc golf throw bearing for this hole (tee→basket); keep the longest.
+        const tb = fbBearing(cs[0][1], cs[0][0], cs[cs.length-1][1], cs[cs.length-1][0]);
+        const tbLen = fbDistM(cs[0][1], cs[0][0], cs[cs.length-1][1], cs[cs.length-1][0]);
+        if (!dgHoleBearing[p.hole] || tbLen > dgHoleBearing[p.hole].len) {
+          dgHoleBearing[p.hole] = { brg: tb, len: tbLen };
+        }
         for (let i = 0; i < cs.length - 1; i++) {
           const a = cs[i], b = cs[i + 1];
           const segM = fbDistM(a[1], a[0], b[1], b[0]);
@@ -278,6 +285,11 @@ function fbDistM(aLat, aLng, bLat, bLng) {
   const dLng = (bLng - aLng) * 111320 * Math.cos(((aLat + bLat) / 2) * Math.PI / 180);
   return Math.hypot(dLat, dLng);
 }
+// Smallest angle between two bearings (0–180°).
+function fbAngDiff(a, b) { const d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; }
+// Direction of an archery shot vs a disc golf hole's throw:
+//   ≤45° "samme" (same way), ≤90° "kryssende", else "motgående" (opposing).
+function fbDirCat(diff) { return diff <= 45 ? 'samme' : diff <= 90 ? 'kryssende' : 'motgående'; }
 // Ray-casting point-in-polygon. ring = [[lat,lng], ...]; pt = {lat,lng}.
 function pointInPolygon(pt, ring) {
   let inside = false;
@@ -330,24 +342,51 @@ function renderFeltLayer(fc) {
           fbDest(farC[0], farC[1], brg + 90, farHalf),
           fbDest(sLat, sLng, brg + 90, FUNNEL_MIN),
         ];
+        // Which disc golf holes the zone overlaps, and the shot's direction
+        // relative to each hole's throw. Same-direction overlaps are NOT a real
+        // conflict (both send projectiles the same way, the area is open and
+        // both sports wait their turn); only opposing throws are flagged red.
         const hit = {};
         dgPoints.forEach((p) => { if (pointInPolygon(p, ring)) hit[p.hole] = true; });
         const holes = Object.keys(hit).sort((a, b) => a - b);
-        const conflict = holes.length > 0;
+        const order = { samme: 0, kryssende: 1, 'motgående': 2 };
+        let worst = null, worstHoles = [];
+        holes.forEach((h) => {
+          const hb = dgHoleBearing[h];
+          if (!hb) return;
+          const cat = fbDirCat(fbAngDiff(brg, hb.brg));
+          if (worst === null || order[cat] > order[worst]) { worst = cat; worstHoles = [h]; }
+          else if (cat === worst) worstHoles.push(h);
+        });
         const backstop = f.properties.backstop_m;
-        const col = conflict ? '#c0392b' : (backstop ? '#1f9d55' : '#e67e22');
+        const slopeNum = Number(f.properties.slope_deg);
+        const carryRisk = !backstop && ((slopeNum <= -8) || dist >= 60);  // langt utløp
+        const opposing = worst === 'motgående';
+        const crossing = worst === 'kryssende';
+        // Colour: red = opposing throw (real conflict); amber = needs a look
+        // (crossing, or long/steep overshoot); green = natural backstop; orange
+        // = clear / same-direction.
+        const col = opposing ? '#c0392b'
+          : (crossing || carryRisk) ? '#e67e22'
+          : (backstop ? '#1f9d55' : '#e8a33d');
+        const attention = opposing || crossing || carryRisk;
         const terr = f.properties.terrain_note ? '<br>Terreng: ' + esc(f.properties.terrain_note) : '';
-        const slope = (f.properties.slope_deg != null)
-          ? '<br>Helling skudd: ' + esc(f.properties.slope_deg) + '°' : '';
-        const popup = conflict
-          ? '<b>⚠ Konflikt med discgolf</b><br>WA-sikkerhetssone (trakt ±' +
-            (dist / 6).toFixed(1) + ' m, ' + Math.round(overshoot) + ' m overskyting)<br>' +
-            'Overlapper discgolf-hull: ' + esc(holes.join(', ')) + slope + terr
-          : 'WA-sikkerhetssone · trakt ±' + (dist / 6).toFixed(1) + ' m, ' +
-            Math.round(overshoot) + ' m overskyting' + slope + terr;
-        L.polygon(ring, { color: col, weight: conflict ? 2 : 1, fillColor: col,
-          fillOpacity: conflict ? 0.18 : 0.10, opacity: conflict ? 0.75 : 0.5,
-          dashArray: conflict ? null : '4 5' }).bindPopup(popup).addTo(group);
+        const slope = Number.isFinite(slopeNum) ? '<br>Helling skudd: ' + slopeNum + '°' : '';
+        let dirLine = '';
+        if (worst) {
+          const label = worst === 'samme' ? 'samme kasteretning som discgolf (håndteres med oversikt og venting)'
+            : worst === 'kryssende' ? 'kryssende discgolf-retning – sjekk feltet før skudd'
+            : 'motgående discgolf-retning – vent til feltet er klart';
+          dirLine = '<br>Discgolf-hull i sonen: ' + esc(holes.join(', ')) +
+            '<br>Retning: ' + esc(label);
+        }
+        const head = opposing ? '<b>⚠ Motgående discgolf-retning</b><br>'
+          : crossing ? '<b>Kryssende discgolf-retning</b><br>' : '';
+        const popup = head + 'WA-sikkerhetssone · trakt ±' + (dist / 6).toFixed(1) +
+          ' m, ' + Math.round(overshoot) + ' m overskyting' + dirLine + slope + terr;
+        L.polygon(ring, { color: col, weight: attention ? 2 : 1, fillColor: col,
+          fillOpacity: attention ? 0.16 : 0.10, opacity: attention ? 0.7 : 0.5,
+          dashArray: attention ? null : '4 5' }).bindPopup(popup).addTo(group);
       }
 
       // Shooting lane
@@ -404,9 +443,10 @@ feltLegend.onAdd = function () {
   div.innerHTML =
     '<b>Feltbane – sikkerhet (WA)</b>' +
     '<div><span class="lg-arrow"></span> Skyteretning (↗/↘ = helling)</div>' +
-    '<div><span class="lg-sw lg-safe"></span> Sikkerhetssone (trakt ±d/6 + overskyting)</div>' +
+    '<div><span class="lg-sw lg-safe"></span> Sikkerhetssone – samme retning som discgolf</div>' +
     '<div><span class="lg-sw lg-backstop"></span> Naturlig bakstopp (terreng stiger bak)</div>' +
-    '<div><span class="lg-sw lg-conflict"></span> Konflikt med discgolfbane</div>';
+    '<div><span class="lg-sw lg-attention"></span> Krever oversikt (kryssende / langt utløp)</div>' +
+    '<div><span class="lg-sw lg-conflict"></span> Motgående discgolf-retning</div>';
   return div;
 };
 feltLegend.addTo(map);

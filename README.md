@@ -95,12 +95,16 @@ lenger. Stasjoner med naturlig bakstopp tegnes **grønne**, og hellingen vises s
 ↗/↘-badge ved hver stasjon. Egenskapene (`z_peg`, `z_target`, `slope_deg`,
 `backstop_m`, `overshoot_m`, `terrain_note`) ligger lagret i geojson-en.
 
-**Konfliktsjekk mot discgolf:** hver sikkerhetssone testes mot discgolfbanen
-(utkast, kurver og fortettede fairway-punkter fra `course.geojson`). Soner som
-overlapper et discgolf-element tegnes **røde** med ⚠-varsel som lister hvilke hull
-de treffer; klare soner er **oransje** (uten bakstopp) eller **grønne** (naturlig
-bakstopp). Pila ved blinket viser **skyteretning**. Tegnforklaringen nede til
-høyre forklarer fargene.
+**Konfliktsjekk mot discgolf – retningsbasert:** hver sikkerhetssone testes mot
+discgolfbanen (utkast, kurver og fortettede fairway-punkter fra `course.geojson`).
+Men **overlapp = ikke konflikt**: for hvert discgolf-element i sonen sammenlignes
+skuddretningen med hullets kasteretning (lengste fairway). Skyter de **samme vei**
+(≤ 45°) er det trygt med vanlig oversikt og venting på tur – slik både bueskyttere
+og discgolfere allerede praktiserer i åpent terreng. Bare **motgående** retning
+(> 90°) tegnes **rødt** som reell konflikt; **kryssende** (45–90°) eller langt/bratt
+utløp blir **amber** («krever oversikt»); ellers **grønt** (naturlig bakstopp) eller
+**oransje** (samme retning / fri sone). Pila ved blinket viser **skyteretning**.
+Tegnforklaringen nede til høyre forklarer fargene.
 
 **Presentasjonsside (`analyse.html`):** en egen SWOT-side med nøkkeltall,
 høydeprofil langs gangruta og et kort per mål (avstand, retning, høyde, helling,

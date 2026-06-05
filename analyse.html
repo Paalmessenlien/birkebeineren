@@ -55,6 +55,7 @@
     .pill { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px;
       border-radius:20px; }
     .pill.ok { background:#e3f6ec; color:#127a40; }
+    .pill.warn { background:#fdf0dd; color:#9a5b09; }
     .pill.bad { background:#fbe6e2; color:#a3271a; }
     footer { color:#5b6675; font-size:12px; padding:24px 0 40px; }
     .note { background:#fff; border:1px solid var(--line); border-left:4px solid #2d7dd2;
@@ -105,16 +106,21 @@
     return inside; }
   const COMPASS=['N','NØ','Ø','SØ','S','SV','V','NV'];
   function compass(b){ return COMPASS[Math.round(b/45)%8]; }
+  function angDiff(a,b){ const d=Math.abs(a-b)%360; return d>180?360-d:d; }
+  function dirCat(diff){ return diff<=45?'samme':diff<=90?'kryssende':'motgående'; }
 
   Promise.all([
     fetch('./course.geojson').then(r=>r.json()),
     fetch('./birkebeineren-feltbane.geojson').then(r=>r.json())
   ]).then(([course, felt])=>{
-    // disc golf reference points (densified, tagged with hole + kind)
-    const dg=[];
+    // disc golf reference points (densified, tagged with hole + kind) + per-hole throw bearing
+    const dg=[], holeB={};
     course.features.forEach(f=>{ const p=f.properties;
       if(p.kind==='tee'||p.kind==='basket') dg.push({lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],hole:p.hole,kind:p.kind});
       else if(p.kind==='fairway'){ const cs=f.geometry.coordinates;
+        const tb=bearing(cs[0][1],cs[0][0],cs[cs.length-1][1],cs[cs.length-1][0]);
+        const tl=distM(cs[0][1],cs[0][0],cs[cs.length-1][1],cs[cs.length-1][0]);
+        if(!holeB[p.hole]||tl>holeB[p.hole].len) holeB[p.hole]={brg:tb,len:tl};
         for(let i=0;i<cs.length-1;i++){ const a=cs[i],b=cs[i+1], seg=distM(a[1],a[0],b[1],b[0]), n=Math.max(1,Math.ceil(seg/5));
           for(let s=0;s<=n;s++){ const t=s/n; dg.push({lat:a[1]+(b[1]-a[1])*t,lng:a[0]+(b[0]-a[0])*t,hole:p.hole,kind:'fairway'}); } } }
     });
@@ -136,25 +142,38 @@
         const holes=Object.keys(hitHoles).sort((a,b)=>a-b);
         const kinds=Object.keys(hitKinds);
         const slope=p.slope_deg, backstop=p.backstop_m;
-        const conflict=holes.length>0;
-        // severity score
-        let score=(conflict?2:0)+(backstop?0:1)+(slope!=null&&slope<=-10?1:0)+(dist>=60?1:0);
-        if(conflict&&backstop) score=Math.max(score,2);
-        const level = score>=3?'Høy' : score===2?'Middels' : 'Lav';
+        // Direction of the shot vs each overlapping hole's throw. Same-direction
+        // overlaps are managed by overview + turn-taking and are NOT conflicts;
+        // only opposing throws are genuine conflicts.
+        const order={samme:0,kryssende:1,'motgående':2};
+        let worst=null; const byCat={samme:[],kryssende:[],'motgående':[]};
+        holes.forEach(h=>{ const hb=holeB[h]; if(!hb) return;
+          const cat=dirCat(angDiff(brg,hb.brg)); byCat[cat].push(h);
+          if(worst===null||order[cat]>order[worst]) worst=cat; });
+        const opposing=worst==='motgående', crossing=worst==='kryssende';
+        const carryRisk = !backstop && ((slope!=null&&slope<=-8) || dist>=60); // langt utløp
+        const level = (opposing&&!backstop) ? 'Høy'
+          : (opposing||crossing||carryRisk) ? 'Middels' : 'Lav';
         return {st:p.station,dgHole:p.dg_hole,dist,brg,slope,zp:p.z_peg,zt:p.z_target,
-          backstop,overshoot,note:p.terrain_note,holes,kinds,conflict,level,halfW:dist/6};
+          backstop,overshoot,note:p.terrain_note,holes,kinds,byCat,worst,opposing,crossing,
+          carryRisk,level,halfW:dist/6};
       });
 
     // ---------- KPIs ----------
-    const nConf=stations.filter(s=>s.conflict).length;
+    const nOpp=stations.filter(s=>s.opposing).length;
+    const nSame=stations.filter(s=>s.worst==='samme').length;
     const nBack=stations.filter(s=>s.backstop).length;
-    const nDown=stations.filter(s=>s.slope!=null&&s.slope<=-5&&!s.backstop).length;
+    const nAtt=stations.filter(s=>s.opposing||s.crossing||s.carryRisk).length;
     const nHigh=stations.filter(s=>s.level==='Høy').length;
     const zs=stations.map(s=>s.zt).filter(z=>z!=null);
     const zRange=zs.length?(Math.round(Math.max(...zs)-Math.min(...zs)))+' m':'–';
-    const kpi=[['Stasjoner',stations.length,''],['Restkonflikt m/ discgolf',nConf,'høydejustert'],
-      ['Naturlig bakstopp',nBack,'terreng stiger bak'],['Nedoverbakke u/ bakstopp',nDown,'forlenget faresone'],
-      ['Høy risiko',nHigh,'krever tiltak'],['Høydespenn blink',zRange,'min→maks moh']];
+    const kpi=[['Stasjoner',stations.length,''],
+      ['Motgående konflikt',nOpp,'discgolf-retning mot skudd'],
+      ['Samme-retning overlapp',nSame,'håndteres m/ oversikt + venting'],
+      ['Naturlig bakstopp',nBack,'terreng stiger bak'],
+      ['Krever oversikt',nAtt,'kryssende / langt utløp'],
+      ['Høy risiko',nHigh,'krever tiltak'],
+      ['Høydespenn blink',zRange,'min→maks moh']];
     document.getElementById('kpis').innerHTML = kpi.map(k=>
       `<div class="kpi"><div class="n">${esc(k[1])}</div><div class="l">${esc(k[0])}${k[2]?'<br>'+esc(k[2]):''}</div></div>`).join('');
 
@@ -177,26 +196,27 @@
     })();
 
     // ---------- SWOT ----------
-    const confList=stations.filter(s=>s.conflict).map(s=>'st'+s.st+'→hull '+s.holes.join('/')).join(', ');
-    const downList=stations.filter(s=>s.slope!=null&&s.slope<=-5&&!s.backstop).map(s=>'st'+s.st+' ('+Math.round(s.slope)+'°)').join(', ');
+    const sameList=stations.filter(s=>s.worst==='samme').map(s=>'st'+s.st+'→hull '+s.byCat.samme.join('/')).join(', ');
+    const oppList=stations.filter(s=>s.opposing).map(s=>'st'+s.st+'→hull '+s.byCat['motgående'].join('/')).join(', ');
+    const carryList=stations.filter(s=>s.carryRisk).map(s=>'st'+s.st+' ('+s.dist.toFixed(0)+' m'+(s.slope!=null?', '+Math.round(s.slope)+'°':'')+')').join(', ');
     const swot=[
       ['s-str','💪 Styrker',[
-        'Skyting parallelt med og samme vei som discgolf-kastet – ingen skyter mot der den andre går.',
+        '<b>Alle overlapp er samme kasteretning</b> som discgolf'+(sameList?' ('+esc(sameList)+')':'')+' – bue og disc sender begge «nedover» samme vei, ingen skyter mot der den andre står.',
+        'Bueskyttere og discgolfere er vant til å <b>vente på tur</b> og ha <b>oversikt over feltet før skudd/kast</b> – grunnpremisset for sambruk er oppfylt i åpent, oversiktlig terreng.',
         nBack+' av '+stations.length+' stasjoner har <b>naturlig bakstopp</b> (terrenget stiger ≥3 m bak blink) som fanger overskyting.',
-        'Hele banen ligger innenfor eiendom 51/1 og 57/5; ingen skyting over/mot veg.',
-        'Avstander i hovedsak ≤ WA-grensa på 60 m; sonene følger WA overshoot-trakt (avstand/6).']],
+        'Hele banen ligger innenfor eiendom 51/1 og 57/5; ingen skyting over/mot veg. Soner følger WA overshoot-trakt (avstand/6).']],
       ['s-wek','⚠️ Svakheter',[
-        (nConf?('<b>'+nConf+' stasjoner</b> har restkonflikt mot discgolf etter høydejustering: '+esc(confList)+'.'):'Ingen restkonflikt mot discgolf etter høydejustering.'),
-        'Bratt nedoverbakke uten bakstopp gir lengre pilbane: '+(downList?esc(downList):'ingen'),
-        'Delt areal forutsetter etikette/disiplin – samtidig fri bruk er ikke sikkert.']],
+        (nOpp?('<b>'+nOpp+' stasjoner</b> har motgående discgolf-retning i sonen: '+esc(oppList)+'.'):'<b>Ingen</b> stasjoner skyter mot discgolf-kastretningen.'),
+        'Langt/bratt utløp der pil kan bære forbi blink: '+(carryList?esc(carryList):'ingen')+' – krever god oversikt bakover.',
+        'Sambruk hviler på etikette: at man faktisk venter på tur og sjekker feltet – ikke på fysisk skille.']],
       ['s-opp','🚀 Muligheter',[
-        'Tidsdeling/booking: bue og discgolf på ulike tider eller med utkikk/signal.',
-        'Flytt eller snu de få konfliktstasjonene noen meter til siden med best klaring.',
+        'Tydelig <b>standplass-/venteregel</b>: skyt/kast bare når den parallelle korridoren foran er klar (slik begge sportene allerede praktiserer).',
+        'Behold sambruk i oversiktlig terreng; vurder skilt/markering ved de få stasjonene med langt utløp.',
         'Bruk terrenget aktivt – legg blink foran stigninger som naturlig bakstopp.',
-        'Sett opp nett/varsel bak de bratte nedoverbakkeskuddene (st12, st14).']],
+        'Sett opp varsel/nett bak de bratte nedoverbakkeskuddene (st12, st14) for ekstra margin.']],
       ['s-thr','🌩️ Trusler',[
-        'Samtidig bruk uten signalering – discgolfer i sikkerhetssonen.',
-        'Lange nedoverbakkeskudd (st7, st12, st14) der pil kan bære langt forbi blink.',
+        'Uoversiktlige forhold (tett vegetasjon, dårlig sikt, mørke) bryter premisset om oversikt før skudd.',
+        'Lange nedoverbakkeskudd (st7, st12, st14) der pil kan bære langt ved feilskudd.',
         'Feilskudd mot hytter i vest / veg i sør ved enkelte standplasser.',
         'Tapte piler i terreng med allmenn ferdsel.']]
     ];
@@ -207,14 +227,22 @@
     document.getElementById('targets').innerHTML = stations.map(s=>{
       const dir=compass(s.brg), updown = s.slope==null?'':(s.slope>1?'oppover':s.slope<-1?'nedover':'flatt');
       const problems=[], measures=[], strengths=[];
-      if(s.conflict){ problems.push('Sikkerhetssonen (±'+s.halfW.toFixed(1)+' m, '+Math.round(s.overshoot)+' m overskyting) <b>overlapper discgolf hull '+esc(s.holes.join(', '))+'</b>'+(s.kinds.length?' ('+esc(s.kinds.join(', '))+')':'')+'.');
-        measures.push('Tidsdele/signalere mot hull '+esc(s.holes.join(', '))+'; vurder å flytte standplass eller snu skuddretning noen grader.'); }
-      if(s.slope!=null && s.slope<=-5 && !s.backstop){ problems.push('Nedoverbakke '+Math.round(s.slope)+'° uten naturlig bakstopp – pil bærer lengre; faresone satt til '+Math.round(s.overshoot)+' m.');
-        measures.push('Sett opp bakstopp-nett/varsel; hold utløpet fritt for ferdsel.'); }
-      if(s.dist>=60){ problems.push('Langt skudd ('+s.dist.toFixed(0)+' m) → større sideveis spredning (±'+s.halfW.toFixed(1)+' m).'); }
-      if(!s.conflict && !(s.slope!=null&&s.slope<=-5&&!s.backstop) && s.dist<60) problems.push('Ingen vesentlige problemer identifisert.');
+      const sameH=s.byCat.samme, crossH=s.byCat.kryssende, oppH=s.byCat['motgående'];
+      if(oppH.length){ problems.push('<b>Motgående:</b> sonen dekker discgolf hull '+esc(oppH.join(', '))+' som kaster mot skuddretningen.');
+        measures.push('Vent til hull '+esc(oppH.join(', '))+' er klart; vurder å flytte/snu standplass.'); }
+      if(crossH.length){ problems.push('<b>Kryssende:</b> sonen dekker discgolf hull '+esc(crossH.join(', '))+' (retning på tvers).');
+        measures.push('Visuell sjekk og venting før skudd mot hull '+esc(crossH.join(', '))+'.'); }
+      if(sameH.length){ strengths.push('Overlapper discgolf hull '+esc(sameH.join(', '))+', men <b>samme kasteretning</b> – ingen skyter mot der den andre står.');
+        measures.push('Vanlig standplass-etikette: skyt når korridoren foran er klar.'); }
+      if(s.carryRisk){ problems.push('Langt/bratt utløp ('+s.dist.toFixed(0)+' m'+(s.slope!=null?', '+Math.round(s.slope)+'°':'')+', '+Math.round(s.overshoot)+' m overskyting) – pil kan bære forbi blink.');
+        measures.push('Hold utløpet fritt for ferdsel; vurder varsel/nett bak blink.'); }
+      if(!oppH.length && !crossH.length && !s.carryRisk) problems.push('Ingen vesentlige problemer – samme retning / fri sone, håndteres med vanlig oversikt og venting.');
       if(s.backstop){ strengths.push('Naturlig bakstopp ~'+s.backstop+' m bak blink (terreng stiger) demper overskyting.'); measures.push('Behold blinkplassering foran stigningen – terrenget er sikringen.'); }
       if(s.slope!=null && s.slope>1) strengths.push('Skyter oppover ('+Math.round(s.slope)+'°) – kort pilutløp bak blink.');
+      const dirPill = !s.worst ? '<span class="pill ok">ingen overlapp</span>'
+        : s.worst==='samme' ? '<span class="pill ok">samme retning · hull '+esc(sameH.join(', '))+'</span>'
+        : s.worst==='kryssende' ? '<span class="pill warn">kryssende · hull '+esc(crossH.join(', '))+'</span>'
+        : '<span class="pill bad">motgående · hull '+esc(oppH.join(', '))+'</span>';
       const facts=[['Discgolf-hull', s.dgHole!=null?('hull '+s.dgHole):'–'],
         ['Avstand', s.dist.toFixed(1)+' m'],
         ['Retning', dir+' ('+Math.round(s.brg)+'°)'],
@@ -222,7 +250,7 @@
         ['Helling', (s.slope!=null?(s.slope>0?'+':'')+s.slope+'° '+updown:'–')],
         ['Bakstopp', s.backstop?('~'+s.backstop+' m'):'nei'],
         ['Overskyting', Math.round(s.overshoot)+' m'],
-        ['Konflikt', s.conflict?('<span class="pill bad">hull '+esc(s.holes.join(', '))+'</span>'):'<span class="pill ok">ingen</span>']];
+        ['Discgolf i sone', dirPill]];
       return `<div class="t lvl-${s.level}">
         <div class="top"><b>Stasjon ${esc(s.st)}</b><span class="lvl">${s.level} risiko</span></div>
         <div class="body">
@@ -237,8 +265,10 @@
     document.getElementById('method').innerHTML =
       'Sikkerhetssonene følger <b>World Archery</b> sin overshoot-trakt: trygg halvbredde = avstand ÷ 6 (min 5 m) ut fra skytepelen, '+
       'med overskyting bak blink justert etter <b>Kartverkets høydedata (1 m DTM)</b> – kortet ned der terrenget stiger til naturlig bakstopp (≥3 m innen 50 m), '+
-      'forlenget på nedoverbakkeskudd. Konflikt = et discgolf-element (utkast, kurv eller fortettet fairway-punkt fra course.geojson) inne i sonen. '+
-      'Tallene regnes live fra geojson-filene, så siden følger redigeringer av banen.';
+      'forlenget på nedoverbakkeskudd. <b>Overlapp er ikke det samme som konflikt:</b> for hvert discgolf-element i sonen sammenlignes skuddretningen med hullets '+
+      'kasteretning (lengste fairway). Skyter de <b>samme vei</b> (≤45°) er det trygt med vanlig oversikt og venting på tur – som begge sportene allerede praktiserer; '+
+      'bare <b>motgående</b> retning (&gt;90°) regnes som reell konflikt, og <b>kryssende</b> (45–90°) eller langt/bratt utløp markeres som «krever oversikt». '+
+      'Premisset er åpent, oversiktlig terreng. Tallene regnes live fra geojson-filene, så siden følger redigeringer av banen.';
     document.getElementById('foot').textContent =
       'Generert fra birkebeineren-feltbane.geojson + course.geojson · WA-regelverk + Kartverket høydedata · '+stations.length+' stasjoner analysert.';
   }).catch(e=>{ document.querySelector('main').innerHTML='<p style="color:#c0392b">Kunne ikke laste data: '+esc(e.message)+'</p>'; });
