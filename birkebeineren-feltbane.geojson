@@ -1,0 +1,487 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "name": "Birkebeineren feltbane",
+    "created_with": "feltbane-editor",
+    "discipline": "field"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "1",
+        "distance": 4.65,
+        "layer": "felt bueskyting",
+        "name": "1",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/b049a7a0-9510-4225-b2cc-74de1c6e6f10-1780678088123-3d3be272.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 500.6,
+        "z_target": 502.4,
+        "slope_deg": 21.2,
+        "backstop_m": 15,
+        "overshoot_m": 15,
+        "terrain_note": "naturlig bakstopp ~15 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.512515740119854,
+            61.139194913977505
+          ],
+          [
+            10.512504373023148,
+            61.13923633962192
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "2",
+        "distance": 30.2,
+        "layer": "felt bueskyting",
+        "name": "6",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/689b11ae-4b2f-4ec7-bc78-a0163311c046-1780680142122-5396860a.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 551.0,
+        "z_target": 548.5,
+        "slope_deg": -4.8,
+        "backstop_m": 25,
+        "overshoot_m": 25,
+        "terrain_note": "naturlig bakstopp ~25 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.51578785880338,
+            61.141880738972255
+          ],
+          [
+            10.515716029331088,
+            61.14215012342882
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "3",
+        "distance": 10.25,
+        "layer": "felt bueskyting",
+        "name": "5",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/4c437a5d-c593-42a5-96b6-91ef79f52ec3-1780679962296-39da4fcb.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 539.5,
+        "z_target": 540.1,
+        "slope_deg": 3.4,
+        "backstop_m": 20,
+        "overshoot_m": 20,
+        "terrain_note": "naturlig bakstopp ~20 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.514572777929063,
+            61.141661513362074
+          ],
+          [
+            10.514607693876314,
+            61.14175213436619
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "4",
+        "distance": 13.58,
+        "layer": "felt bueskyting",
+        "name": "7",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/0c5a688c-45f7-4b1f-9c52-85b4cfb29ca8-1780680353081-2dca3289.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 544.5,
+        "z_target": 545.1,
+        "slope_deg": 2.8,
+        "backstop_m": 25,
+        "overshoot_m": 25,
+        "terrain_note": "naturlig bakstopp ~25 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.513723821204623,
+            61.142117275336716
+          ],
+          [
+            10.513610418393004,
+            61.14222641913682
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "5",
+        "distance": 44.98,
+        "layer": "felt bueskyting",
+        "name": "8",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/e8a01f8b-c927-4325-bf38-1e7329ef463a-1780680463022-b1ed310c.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 541.9,
+        "z_target": 539.6,
+        "slope_deg": -3.0,
+        "backstop_m": null,
+        "overshoot_m": 50,
+        "terrain_note": "flatt/oppover bak – 50 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.513236911210699,
+            61.14187509468417
+          ],
+          [
+            10.512487741084442,
+            61.14169375712037
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "6",
+        "distance": 20.72,
+        "layer": "felt bueskyting",
+        "name": "9",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/271b3350-4eed-440a-9ee6-20f3b1029ece-1780680598431-fa52b160.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 529.3,
+        "z_target": 530.8,
+        "slope_deg": 4.2,
+        "backstop_m": 30,
+        "overshoot_m": 30,
+        "terrain_note": "naturlig bakstopp ~30 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.512167215347292,
+            61.14104748345368
+          ],
+          [
+            10.511861188542754,
+            61.14116104155352
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "7",
+        "distance": 76.07,
+        "layer": "felt bueskyting",
+        "name": "10",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/03c1b899-7c07-43ce-86a8-82a37189e209-1780680797119-f2d9ec00.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 526.1,
+        "z_target": 517.6,
+        "slope_deg": -6.3,
+        "backstop_m": null,
+        "overshoot_m": 55,
+        "terrain_note": "nedoverbakke -6° – faresone +5 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.512054562568666,
+            61.14087141984276
+          ],
+          [
+            10.510671717943296,
+            61.140721327285604
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "8",
+        "distance": 24.36,
+        "layer": "felt bueskyting",
+        "name": "11",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/fc1c106d-3f45-449b-92c2-30f0bfac4c1e-1780681112136-22e2e4f6.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 511.4,
+        "z_target": 510.9,
+        "slope_deg": -1.2,
+        "backstop_m": 5,
+        "overshoot_m": 5,
+        "terrain_note": "naturlig bakstopp ~5 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.510269810883985,
+            61.14016266645622
+          ],
+          [
+            10.51064719731585,
+            61.14004093008845
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "9",
+        "distance": 13.07,
+        "layer": "felt bueskyting",
+        "name": "2",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/1db12a8b-289d-4ed0-861f-85aef75195b9-1780678259640-7b84c1d3.jpg",
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/1db12a8b-289d-4ed0-861f-85aef75195b9-1780678271446-023f0d6e.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 510.2,
+        "z_target": 510.4,
+        "slope_deg": 1.1,
+        "backstop_m": 20,
+        "overshoot_m": 20,
+        "terrain_note": "naturlig bakstopp ~20 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.51342131226193,
+            61.1396769401292
+          ],
+          [
+            10.513398347566183,
+            61.13979395291852
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "10",
+        "distance": 9.68,
+        "layer": "felt bueskyting",
+        "name": "3",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [],
+        "discipline": "field",
+        "z_peg": 516.9,
+        "z_target": 515.4,
+        "slope_deg": -9.3,
+        "backstop_m": null,
+        "overshoot_m": 60,
+        "terrain_note": "nedoverbakke -9° – faresone +10 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.51344394683838,
+            61.140198952914396
+          ],
+          [
+            10.513610243797304,
+            61.14023259861666
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "11",
+        "distance": 21.59,
+        "layer": "felt bueskyting",
+        "name": "4",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/1d6e0ce6-314c-4836-8525-78fefcc067e2-1780679698950-93eb0c5b.jpg",
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/1d6e0ce6-314c-4836-8525-78fefcc067e2-1780679799634-e131b886.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 529.3,
+        "z_target": 530.2,
+        "slope_deg": 2.5,
+        "backstop_m": null,
+        "overshoot_m": 50,
+        "terrain_note": "flatt/oppover bak – 50 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.51345777869756,
+            61.141188835283764
+          ],
+          [
+            10.513828506836946,
+            61.14111350618549
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "12",
+        "distance": 32.01,
+        "layer": "felt bueskyting",
+        "name": "13",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/c59fd07b-a47c-4e6e-a963-a595bc024b17-1780681645497-88db5ed8.jpg",
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/c59fd07b-a47c-4e6e-a963-a595bc024b17-1780681745299-acf14361.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 501.1,
+        "z_target": 491.6,
+        "slope_deg": -16.6,
+        "backstop_m": null,
+        "overshoot_m": 65,
+        "terrain_note": "nedoverbakke -17° – faresone +15 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.512119770255595,
+            61.13871682662046
+          ],
+          [
+            10.511684585362673,
+            61.138519952556365
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "13",
+        "distance": 26.25,
+        "layer": "felt bueskyting",
+        "name": "",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/6a2dc16a-cafd-49e9-87cf-4f082b18155b-1780679194391-626e05d1.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 513.4,
+        "z_target": 510.6,
+        "slope_deg": -6.0,
+        "backstop_m": 35,
+        "overshoot_m": 35,
+        "terrain_note": "naturlig bakstopp ~35 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.512048120617694,
+            61.13983900617808
+          ],
+          [
+            10.512142904308348,
+            61.140070585902556
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "station": "14",
+        "distance": 74.58,
+        "layer": "felt bueskyting",
+        "name": "",
+        "targetType": "",
+        "notes": "",
+        "imageUrls": [
+          "https://ianseo.b-cdn.net/ianseo-portal/track-images/296a54b4-a753-49b4-9e19-148fa8434b62-1780681279611-043b68ca.jpg"
+        ],
+        "discipline": "field",
+        "z_peg": 509.0,
+        "z_target": 497.4,
+        "slope_deg": -8.9,
+        "backstop_m": null,
+        "overshoot_m": 60,
+        "terrain_note": "nedoverbakke -9° – faresone +10 m"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            10.510817896574736,
+            61.139583115699594
+          ],
+          [
+            10.509961259194826,
+            61.13905505752047
+          ]
+        ]
+      }
+    }
+  ]
+}

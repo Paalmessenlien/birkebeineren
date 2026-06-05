@@ -72,6 +72,47 @@ løypa, så ingen skyter/kaster mot der den andre går. Sikkerheten ligger i
 Forslaget kan åpnes i `editor.html` (Importer → `fictive_field.geojson`) og
 justeres fritt.
 
+## Sikkerhet (World Archery) – automatiske soner og konfliktsjekk
+
+For feltbane-filer **uten egne sikkerhetspolygoner** (f.eks.
+`birkebeineren-feltbane.geojson`) tegner `app.js` sikkerhetssonen automatisk etter
+**World Archery (WA)** sitt prinsipp om en *overskytings-trakt*:
+
+- **Lateral trakt:** trygg halvbredde fra skuddlinja = **avstand ÷ 6** (minimum
+  **5 m**) – en konstant ±9,46°-kjegle ut fra skytepelen. (WA-medlemsforbund, jf.
+  Archery Australia *Safety Guidelines* sin overshoot-funnel: 90 m→15 m, 60 m→10 m,
+  30 m→5 m.)
+- **Overskyting bak blink:** **50 m** ryddet sone bak hvert blink (WA: «minst 50 m
+  bak lengste blink» når det ikke finnes bakstopp).
+- Til orientering: WA anbefaler òg **≥ 20 m** fri sone til hver side av hele
+  *field of play*, og at ingen tegner/skyter slik at en utilsiktet løsnet pil kan
+  gå **utenfor** overskytingssonen (WA Book 4 §28–29).
+
+**Høydejustering (Kartverket høydedata, 1 m DTM):** overskytingen bak hvert blink
+justeres etter terrenget – **kortes ned** der terrenget stiger til en naturlig
+bakstopp (≥ 3 m innen 50 m) og **forlenges** på nedoverbakkeskudd der pila bærer
+lenger. Stasjoner med naturlig bakstopp tegnes **grønne**, og hellingen vises som
+↗/↘-badge ved hver stasjon. Egenskapene (`z_peg`, `z_target`, `slope_deg`,
+`backstop_m`, `overshoot_m`, `terrain_note`) ligger lagret i geojson-en.
+
+**Konfliktsjekk mot discgolf:** hver sikkerhetssone testes mot discgolfbanen
+(utkast, kurver og fortettede fairway-punkter fra `course.geojson`). Soner som
+overlapper et discgolf-element tegnes **røde** med ⚠-varsel som lister hvilke hull
+de treffer; klare soner er **oransje** (uten bakstopp) eller **grønne** (naturlig
+bakstopp). Pila ved blinket viser **skyteretning**. Tegnforklaringen nede til
+høyre forklarer fargene.
+
+**Presentasjonsside (`analyse.html`):** en egen SWOT-side med nøkkeltall,
+høydeprofil langs gangruta og et kort per mål (avstand, retning, høyde, helling,
+bakstopp, overskyting, konflikt, risikonivå + mulige problemer og tiltak).
+Regnes live fra geojson-filene, så den følger redigeringer. Åpnes fra knappen
+**📊 Sikkerhetsanalyse** i kartet.
+
+> PDGA gir ingen fast tallavstand mellom hull, men discgolfere står langs hele
+> fairwayen og kast kan gå langt – derfor regnes ethvert discgolf-punkt inne i en
+> bue-sikkerhetssone som en reell konflikt som må løses (flytt stasjon, snu
+> retning, eller skill aktivitetene i tid).
+
 ## Hosting på GitHub Pages
 
 Fungerer som det er – GitHub Pages serverer statiske filer.

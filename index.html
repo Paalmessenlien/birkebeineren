@@ -45,13 +45,36 @@
       box-shadow: 0 1px 3px rgba(0,0,0,.5);
     }
     .bue-label span { font-weight: 400; font-size: 11px; opacity: .9; }
+    /* Firing-direction arrow (points north at 0°, rotated to the bearing) */
+    .shoot-arrow { background: none; border: 0; }
+    .shoot-arrow i { display: block; width: 0; height: 0;
+      border-left: 6px solid transparent; border-right: 6px solid transparent;
+      border-bottom: 13px solid #0b2e7a; margin: 1px auto 0;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); transform-origin: 50% 60%; }
     #editlink { position: absolute; bottom: 16px; left: 16px; z-index: 1000;
       background: #0b2e7a; color: #fff; text-decoration: none;
+      padding: 8px 12px; border-radius: 8px; font: 600 13px system-ui, sans-serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+    #analyselink { position: absolute; bottom: 16px; left: 176px; z-index: 1000;
+      background: #1456b8; color: #fff; text-decoration: none;
       padding: 8px 12px; border-radius: 8px; font: 600 13px system-ui, sans-serif;
       box-shadow: 0 2px 8px rgba(0,0,0,.4); }
     .locate-btn { font-size: 16px; text-align: center; line-height: 26px;
       text-decoration: none; cursor: pointer; }
     .locate-btn.active { background: #d6e4ff; }
+    /* Felt safety legend */
+    .felt-legend { background: rgba(255,255,255,.92); border-radius: 8px;
+      padding: 7px 9px; font: 11px/1.5 system-ui, sans-serif; color: #222;
+      box-shadow: 0 1px 6px rgba(0,0,0,.3); max-width: 220px; }
+    .felt-legend b { font-size: 12px; display: block; margin-bottom: 3px; }
+    .felt-legend div { display: flex; align-items: center; gap: 6px; }
+    .felt-legend .lg-sw { width: 16px; height: 11px; flex: 0 0 auto; border-radius: 2px; }
+    .felt-legend .lg-safe { background: rgba(243,156,18,.4); border: 1px dashed #e67e22; }
+    .felt-legend .lg-backstop { background: rgba(31,157,85,.35); border: 1px dashed #1f9d55; }
+    .felt-legend .lg-conflict { background: rgba(192,57,43,.35); border: 1px solid #c0392b; }
+    .felt-legend .lg-arrow { width: 0; height: 0; flex: 0 0 auto; margin: 0 3px;
+      border-left: 5px solid transparent; border-right: 5px solid transparent;
+      border-bottom: 10px solid #0b2e7a; }
     .leaflet-popup-content { font: 13px/1.4 system-ui, sans-serif; }
     .leaflet-popup-content b { font-size: 14px; }
   </style>
@@ -59,6 +82,7 @@
 <body>
   <div id="map"></div>
   <a href="./editor.html" id="editlink">🎯 Rediger feltbane</a>
+  <a href="./analyse.html" id="analyselink">📊 Sikkerhetsanalyse</a>
   <script src="./library.js"></script>
   <script src="./app.js"></script>
 </body>

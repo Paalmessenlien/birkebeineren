@@ -200,6 +200,13 @@ function styleFairway(feature) {
 }
 
 // ---- Load data & draw ------------------------------------------------------
+// Disc golf reference points (tees, baskets, densified fairway vertices), used
+// to test whether an archery safety zone overlaps the disc golf course. Felt
+// overlays wait on dgReady so the conflict check has data to test against.
+let dgPoints = [];          // [{ lat, lng, hole }]
+let dgReadyResolve;
+const dgReady = new Promise((res) => { dgReadyResolve = res; });
+
 fetch('./course.geojson')
   .then((r) => r.json())
   .then((fc) => {
@@ -228,14 +235,67 @@ fetch('./course.geojson')
       .filter((f) => f.properties.kind === 'tee' || f.properties.kind === 'basket')
       .map((f) => [f.geometry.coordinates[1], f.geometry.coordinates[0]]); // [lat,lng]
 
+    // Build the disc golf reference point cloud for archery conflict testing.
+    fc.features.forEach((f) => {
+      const p = f.properties;
+      if (p.kind === 'tee' || p.kind === 'basket') {
+        dgPoints.push({ lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0], hole: p.hole });
+      } else if (p.kind === 'fairway') {
+        const cs = f.geometry.coordinates;            // [lng,lat] pairs
+        for (let i = 0; i < cs.length - 1; i++) {
+          const a = cs[i], b = cs[i + 1];
+          const segM = fbDistM(a[1], a[0], b[1], b[0]);
+          const steps = Math.max(1, Math.ceil(segM / 5));   // sample every ~5 m
+          for (let s = 0; s <= steps; s++) {
+            const t = s / steps;
+            dgPoints.push({ lat: a[1] + (b[1] - a[1]) * t,
+                            lng: a[0] + (b[0] - a[0]) * t, hole: p.hole });
+          }
+        }
+      }
+    });
+
     document.title =
       `${fc.metadata.course} – ${fc.metadata.layout} (Kartverket)`;
   })
-  .catch((e) => alert('Kunne ikke laste course.geojson: ' + e.message));
+  .catch((e) => alert('Kunne ikke laste course.geojson: ' + e.message))
+  .finally(() => dgReadyResolve());
+
+// ---- Geometry helpers (metre-scale, equirectangular – fine over a course) ---
+function fbBearing(aLat, aLng, bLat, bLng) {
+  const r = Math.PI / 180, y = Math.sin((bLng - aLng) * r) * Math.cos(bLat * r);
+  const x = Math.cos(aLat * r) * Math.sin(bLat * r) -
+            Math.sin(aLat * r) * Math.cos(bLat * r) * Math.cos((bLng - aLng) * r);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+function fbDest(lat, lng, bearingDeg, distM) {
+  const br = bearingDeg * Math.PI / 180;
+  return [lat + (distM * Math.cos(br)) / 111320,
+          lng + (distM * Math.sin(br)) / (111320 * Math.cos(lat * Math.PI / 180))];
+}
+function fbDistM(aLat, aLng, bLat, bLng) {
+  const dLat = (bLat - aLat) * 111320;
+  const dLng = (bLng - aLng) * 111320 * Math.cos(((aLat + bLat) / 2) * Math.PI / 180);
+  return Math.hypot(dLat, dLng);
+}
+// Ray-casting point-in-polygon. ring = [[lat,lng], ...]; pt = {lat,lng}.
+function pointInPolygon(pt, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const yi = ring[i][0], xi = ring[i][1], yj = ring[j][0], xj = ring[j][1];
+    const intersect = ((yi > pt.lat) !== (yj > pt.lat)) &&
+      (pt.lng < ((xj - xi) * (pt.lat - yi)) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
 
 // ---- Render a field-archery FeatureCollection into a toggleable layer ------
 function renderFeltLayer(fc) {
   const group = L.layerGroup();
+  // Only auto-generate safety zones when the file has none of its own.
+  const hasSafety = (fc.features || []).some(
+    (f) => f.properties && f.properties.kind === 'safety');
   (fc.features || []).forEach((f) => {
     if (f.properties.kind === 'safety') {
       L.geoJSON(f, { style: { color: '#c0392b', weight: 1, fillColor: '#e74c3c',
@@ -246,29 +306,110 @@ function renderFeltLayer(fc) {
         .bindPopup('Gangrute').addTo(group);
     } else {
       const cs = f.geometry.coordinates;
+      const sLat = cs[0][1], sLng = cs[0][0];
+      const tLat = cs[cs.length - 1][1], tLng = cs[cs.length - 1][0];
+      const dist = Number(f.properties.distance) || 0;
+      const brg = fbBearing(sLat, sLng, tLat, tLng);
+
+      // World Archery overshoot-zone funnel: a cone from the shooting peg whose
+      // safe half-width grows as distance/6 (min 5 m), continued FELT_OVERSHOOT
+      // metres past the blink. Coloured red where it overlaps the disc golf
+      // course (a conflict), orange otherwise.
+      if (!hasSafety) {
+        const FUNNEL_MIN = 5;
+        // Elevation-adjusted overshoot: shorter where the terrain rises into a
+        // natural backstop, longer on downhill shots (baked into the geojson by
+        // the Kartverket height analysis). Falls back to the WA 50 m minimum.
+        const overshoot = Number(f.properties.overshoot_m) || 50;
+        const R = dist + overshoot;                      // funnel reach from peg
+        const farHalf = Math.max(FUNNEL_MIN, R / 6);
+        const farC = fbDest(sLat, sLng, brg, R);
+        const ring = [
+          fbDest(sLat, sLng, brg - 90, FUNNEL_MIN),
+          fbDest(farC[0], farC[1], brg - 90, farHalf),
+          fbDest(farC[0], farC[1], brg + 90, farHalf),
+          fbDest(sLat, sLng, brg + 90, FUNNEL_MIN),
+        ];
+        const hit = {};
+        dgPoints.forEach((p) => { if (pointInPolygon(p, ring)) hit[p.hole] = true; });
+        const holes = Object.keys(hit).sort((a, b) => a - b);
+        const conflict = holes.length > 0;
+        const backstop = f.properties.backstop_m;
+        const col = conflict ? '#c0392b' : (backstop ? '#1f9d55' : '#e67e22');
+        const terr = f.properties.terrain_note ? '<br>Terreng: ' + esc(f.properties.terrain_note) : '';
+        const slope = (f.properties.slope_deg != null)
+          ? '<br>Helling skudd: ' + esc(f.properties.slope_deg) + '°' : '';
+        const popup = conflict
+          ? '<b>⚠ Konflikt med discgolf</b><br>WA-sikkerhetssone (trakt ±' +
+            (dist / 6).toFixed(1) + ' m, ' + Math.round(overshoot) + ' m overskyting)<br>' +
+            'Overlapper discgolf-hull: ' + esc(holes.join(', ')) + slope + terr
+          : 'WA-sikkerhetssone · trakt ±' + (dist / 6).toFixed(1) + ' m, ' +
+            Math.round(overshoot) + ' m overskyting' + slope + terr;
+        L.polygon(ring, { color: col, weight: conflict ? 2 : 1, fillColor: col,
+          fillOpacity: conflict ? 0.18 : 0.10, opacity: conflict ? 0.75 : 0.5,
+          dashArray: conflict ? null : '4 5' }).bindPopup(popup).addTo(group);
+      }
+
+      // Shooting lane
       L.polyline(cs.map((c) => [c[1], c[0]]),
         { color: '#0b2e7a', weight: 4, opacity: 0.95, lineCap: 'round' })
-        .bindPopup('<b>Mål ' + esc(f.properties.station) + '</b><br>' + esc(f.properties.distance) + ' m').addTo(group);
-      const mid = [(cs[0][1] + cs[cs.length-1][1]) / 2, (cs[0][0] + cs[cs.length-1][0]) / 2];
+        .bindPopup('<b>Mål ' + esc(f.properties.station) + '</b><br>' + esc(f.properties.distance) +
+          ' m<br>Skyteretning: ' + Math.round(brg) + '°').addTo(group);
+
+      // Firing-direction arrow at the blink
+      L.marker([tLat, tLng], { interactive: false, icon: L.divIcon({
+        className: 'shoot-arrow', html: '<i style="transform:rotate(' + brg + 'deg)"></i>',
+        iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(group);
+
+      // Station label at the lane midpoint, with an uphill/downhill slope badge
+      const mid = [(sLat + tLat) / 2, (sLng + tLng) / 2];
+      const sd = f.properties.slope_deg;
+      const slopeBadge = (sd != null)
+        ? ' <span>' + (sd > 1 ? '↗' : sd < -1 ? '↘' : '→') + Math.abs(Math.round(sd)) + '°</span>'
+        : '';
       L.marker(mid, { interactive: false, icon: L.divIcon({ className: 'bue-label',
-        html: esc(f.properties.station) + ' <span>' + esc(f.properties.distance) + ' m</span>',
+        html: esc(f.properties.station) + ' <span>' + esc(f.properties.distance) + ' m</span>' + slopeBadge,
         iconSize: [0, 0], iconAnchor: [0, 0] }) }).addTo(group);
     }
   });
   return group;
 }
 
-// Built-in proposal
-fetch('./fictive_field.geojson')
-  .then((r) => r.json())
-  .then((fc) => layersControl.addOverlay(renderFeltLayer(fc), 'Feltbane (forslag)'))
-  .catch(() => {/* fil mangler – hopp over */});
+// Felt overlays are built only after the disc golf points are cached, so each
+// archery safety zone can be tested for conflicts against the disc golf course.
+dgReady.then(() => {
+  // Built-in proposal (carries its own safety polygons → no auto-funnels)
+  fetch('./fictive_field.geojson')
+    .then((r) => r.json())
+    .then((fc) => layersControl.addOverlay(renderFeltLayer(fc), 'Feltbane (forslag)'))
+    .catch(() => {/* fil mangler – hopp over */});
 
-// Saved courses from the editor (localStorage library) — each its own overlay
-feltLibList().forEach((entry) => {
-  try { layersControl.addOverlay(renderFeltLayer(entry.geojson), '🎯 ' + esc(entry.name)); }
-  catch (e) {/* skip malformed */}
+  // Birkebeineren feltbane (laget i editoren, lagret som fil)
+  fetch('./birkebeineren-feltbane.geojson')
+    .then((r) => r.json())
+    .then((fc) => layersControl.addOverlay(renderFeltLayer(fc), '🎯 Birkebeineren feltbane'))
+    .catch(() => {/* fil mangler – hopp over */});
+
+  // Saved courses from the editor (localStorage library) — each its own overlay
+  feltLibList().forEach((entry) => {
+    try { layersControl.addOverlay(renderFeltLayer(entry.geojson), '🎯 ' + esc(entry.name)); }
+    catch (e) {/* skip malformed */}
+  });
 });
+
+// ---- Legend explaining the felt safety overlay -----------------------------
+const feltLegend = L.control({ position: 'bottomright' });
+feltLegend.onAdd = function () {
+  const div = L.DomUtil.create('div', 'felt-legend');
+  div.innerHTML =
+    '<b>Feltbane – sikkerhet (WA)</b>' +
+    '<div><span class="lg-arrow"></span> Skyteretning (↗/↘ = helling)</div>' +
+    '<div><span class="lg-sw lg-safe"></span> Sikkerhetssone (trakt ±d/6 + overskyting)</div>' +
+    '<div><span class="lg-sw lg-backstop"></span> Naturlig bakstopp (terreng stiger bak)</div>' +
+    '<div><span class="lg-sw lg-conflict"></span> Konflikt med discgolfbane</div>';
+  return div;
+};
+feltLegend.addTo(map);
 
 // ---- Geolocation: "show my location" + auto-follow toggle (HTTPS only) -----
 function addLocateControl(map) {

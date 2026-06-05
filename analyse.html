@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sikkerhetsanalyse (SWOT) – Birkebeineren feltbane</title>
+  <style>
+    :root { --red:#c0392b; --amber:#e67e22; --green:#1f9d55; --ink:#1c2330; --line:#e6e9ef; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body { font: 15px/1.55 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--ink); background: #f4f6fa; }
+    header { background: linear-gradient(135deg,#0b2e7a,#1456b8); color: #fff;
+      padding: 26px 20px; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 18px; }
+    header h1 { margin: 0 0 4px; font-size: 24px; }
+    header p { margin: 0; opacity: .9; font-size: 14px; }
+    header a { color: #cfe0ff; }
+    h2 { font-size: 18px; margin: 26px 0 10px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+      gap: 12px; }
+    .kpi { background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px; }
+    .kpi .n { font-size: 26px; font-weight: 800; }
+    .kpi .l { font-size: 12px; color: #5b6675; }
+    .swot { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .swot > div { background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; }
+    .swot h3 { margin: 0 0 6px; font-size: 14px; }
+    .swot ul { margin: 0; padding-left: 18px; } .swot li { margin: 3px 0; }
+    .s-str { border-top: 4px solid var(--green); }
+    .s-wek { border-top: 4px solid var(--red); }
+    .s-opp { border-top: 4px solid #2d7dd2; }
+    .s-thr { border-top: 4px solid var(--amber); }
+    .profile { background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; }
+    .tcards { display: grid; grid-template-columns: repeat(auto-fill,minmax(330px,1fr));
+      gap: 14px; }
+    .t { background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      overflow: hidden; display: flex; flex-direction: column; }
+    .t .top { padding: 12px 14px; color: #fff; display: flex; align-items: baseline;
+      justify-content: space-between; gap: 8px; }
+    .lvl-Høy .top { background: var(--red); }
+    .lvl-Middels .top { background: var(--amber); }
+    .lvl-Lav .top { background: var(--green); }
+    .t .top b { font-size: 17px; } .t .top .lvl { font-size: 12px; font-weight: 700;
+      background: rgba(255,255,255,.25); padding: 2px 8px; border-radius: 20px; }
+    .t .body { padding: 12px 14px; }
+    .facts { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px;
+      font-size: 13px; margin-bottom: 10px; }
+    .facts dt { color: #5b6675; } .facts dd { margin: 0; font-weight: 600; }
+    .t h4 { margin: 10px 0 4px; font-size: 12px; text-transform: uppercase;
+      letter-spacing: .03em; color: #5b6675; }
+    .t ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+    .t li { margin: 2px 0; }
+    .pill { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px;
+      border-radius:20px; }
+    .pill.ok { background:#e3f6ec; color:#127a40; }
+    .pill.bad { background:#fbe6e2; color:#a3271a; }
+    footer { color:#5b6675; font-size:12px; padding:24px 0 40px; }
+    .note { background:#fff; border:1px solid var(--line); border-left:4px solid #2d7dd2;
+      border-radius:10px; padding:12px 14px; font-size:13.5px; }
+    @media (max-width:640px){ .swot{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header><div class="wrap">
+    <h1>🎯 Sikkerhetsanalyse – Birkebeineren feltbane</h1>
+    <p>SWOT + mål-for-mål vurdering · World Archery-soner, Kartverket høydedata og konflikt mot discgolfbanen ·
+       <a href="./index.html">← tilbake til kartet</a></p>
+  </div></header>
+
+  <main class="wrap">
+    <h2>Nøkkeltall</h2>
+    <div class="cards" id="kpis"></div>
+
+    <h2>Høydeprofil langs gangruta (blinkhøyde)</h2>
+    <div class="profile"><svg id="profile" width="100%" height="170" preserveAspectRatio="none"></svg>
+      <div id="profileLabels" style="display:flex;justify-content:space-between;font-size:11px;color:#5b6675;margin-top:4px;"></div></div>
+
+    <h2>SWOT – delt areal bueskyting + discgolf</h2>
+    <div class="swot" id="swot"></div>
+
+    <h2>Mål-for-mål</h2>
+    <div class="tcards" id="targets"></div>
+
+    <h2>Metode</h2>
+    <div class="note" id="method"></div>
+  </main>
+  <footer class="wrap" id="foot"></footer>
+
+  <script>
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  // ---- geometry (metre-scale, same as app.js) ----
+  function bearing(aLat,aLng,bLat,bLng){ const r=Math.PI/180,
+    y=Math.sin((bLng-aLng)*r)*Math.cos(bLat*r),
+    x=Math.cos(aLat*r)*Math.sin(bLat*r)-Math.sin(aLat*r)*Math.cos(bLat*r)*Math.cos((bLng-aLng)*r);
+    return (Math.atan2(y,x)*180/Math.PI+360)%360; }
+  function dest(lat,lng,b,d){ const br=b*Math.PI/180;
+    return [lat+(d*Math.cos(br))/111320, lng+(d*Math.sin(br))/(111320*Math.cos(lat*Math.PI/180))]; }
+  function distM(aLat,aLng,bLat,bLng){ const dLat=(bLat-aLat)*111320,
+    dLng=(bLng-aLng)*111320*Math.cos(((aLat+bLat)/2)*Math.PI/180); return Math.hypot(dLat,dLng); }
+  function pip(pt,ring){ let inside=false; for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+    const yi=ring[i][0],xi=ring[i][1],yj=ring[j][0],xj=ring[j][1];
+    if(((yi>pt.lat)!==(yj>pt.lat)) && (pt.lng<((xj-xi)*(pt.lat-yi))/(yj-yi)+xi)) inside=!inside; }
+    return inside; }
+  const COMPASS=['N','NØ','Ø','SØ','S','SV','V','NV'];
+  function compass(b){ return COMPASS[Math.round(b/45)%8]; }
+
+  Promise.all([
+    fetch('./course.geojson').then(r=>r.json()),
+    fetch('./birkebeineren-feltbane.geojson').then(r=>r.json())
+  ]).then(([course, felt])=>{
+    // disc golf reference points (densified, tagged with hole + kind)
+    const dg=[];
+    course.features.forEach(f=>{ const p=f.properties;
+      if(p.kind==='tee'||p.kind==='basket') dg.push({lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],hole:p.hole,kind:p.kind});
+      else if(p.kind==='fairway'){ const cs=f.geometry.coordinates;
+        for(let i=0;i<cs.length-1;i++){ const a=cs[i],b=cs[i+1], seg=distM(a[1],a[0],b[1],b[0]), n=Math.max(1,Math.ceil(seg/5));
+          for(let s=0;s<=n;s++){ const t=s/n; dg.push({lat:a[1]+(b[1]-a[1])*t,lng:a[0]+(b[0]-a[0])*t,hole:p.hole,kind:'fairway'}); } } }
+    });
+
+    const FUNNEL_MIN=5;
+    const stations = felt.features
+      .filter(f=>f.geometry.type==='LineString' && f.properties.kind!=='route' && f.properties.kind!=='safety')
+      .sort((a,b)=>(+a.properties.station)-(+b.properties.station))
+      .map(f=>{
+        const cs=f.geometry.coordinates, p=f.properties;
+        const sLat=cs[0][1],sLng=cs[0][0], tLat=cs[cs.length-1][1],tLng=cs[cs.length-1][0];
+        const dist=Number(p.distance)||0, brg=bearing(sLat,sLng,tLat,tLng);
+        const overshoot=Number(p.overshoot_m)||50, R=dist+overshoot, farHalf=Math.max(FUNNEL_MIN,R/6);
+        const fC=dest(sLat,sLng,brg,R);
+        const ring=[dest(sLat,sLng,brg-90,FUNNEL_MIN),dest(fC[0],fC[1],brg-90,farHalf),
+                    dest(fC[0],fC[1],brg+90,farHalf),dest(sLat,sLng,brg+90,FUNNEL_MIN)];
+        const hitHoles={}, hitKinds={};
+        dg.forEach(q=>{ if(pip(q,ring)){ hitHoles[q.hole]=true; hitKinds[q.kind]=true; } });
+        const holes=Object.keys(hitHoles).sort((a,b)=>a-b);
+        const kinds=Object.keys(hitKinds);
+        const slope=p.slope_deg, backstop=p.backstop_m;
+        const conflict=holes.length>0;
+        // severity score
+        let score=(conflict?2:0)+(backstop?0:1)+(slope!=null&&slope<=-10?1:0)+(dist>=60?1:0);
+        if(conflict&&backstop) score=Math.max(score,2);
+        const level = score>=3?'Høy' : score===2?'Middels' : 'Lav';
+        return {st:p.station,dgHole:p.dg_hole,dist,brg,slope,zp:p.z_peg,zt:p.z_target,
+          backstop,overshoot,note:p.terrain_note,holes,kinds,conflict,level,halfW:dist/6};
+      });
+
+    // ---------- KPIs ----------
+    const nConf=stations.filter(s=>s.conflict).length;
+    const nBack=stations.filter(s=>s.backstop).length;
+    const nDown=stations.filter(s=>s.slope!=null&&s.slope<=-5&&!s.backstop).length;
+    const nHigh=stations.filter(s=>s.level==='Høy').length;
+    const zs=stations.map(s=>s.zt).filter(z=>z!=null);
+    const zRange=zs.length?(Math.round(Math.max(...zs)-Math.min(...zs)))+' m':'–';
+    const kpi=[['Stasjoner',stations.length,''],['Restkonflikt m/ discgolf',nConf,'høydejustert'],
+      ['Naturlig bakstopp',nBack,'terreng stiger bak'],['Nedoverbakke u/ bakstopp',nDown,'forlenget faresone'],
+      ['Høy risiko',nHigh,'krever tiltak'],['Høydespenn blink',zRange,'min→maks moh']];
+    document.getElementById('kpis').innerHTML = kpi.map(k=>
+      `<div class="kpi"><div class="n">${esc(k[1])}</div><div class="l">${esc(k[0])}${k[2]?'<br>'+esc(k[2]):''}</div></div>`).join('');
+
+    // ---------- elevation profile ----------
+    (function(){
+      const W=1000,H=170,pad=24, pts=stations.map(s=>s.zt);
+      const mn=Math.min(...pts), mx=Math.max(...pts), span=(mx-mn)||1;
+      const x=i=>pad+i*(W-2*pad)/(pts.length-1);
+      const y=z=>H-pad-(z-mn)/span*(H-2*pad);
+      const line=pts.map((z,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(z).toFixed(1)).join(' ');
+      const area=line+` L ${x(pts.length-1).toFixed(1)} ${H-pad} L ${x(0).toFixed(1)} ${H-pad} Z`;
+      const dots=stations.map((s,i)=>{ const c=s.level==='Høy'?'#c0392b':s.level==='Middels'?'#e67e22':'#1f9d55';
+        return `<circle cx="${x(i).toFixed(1)}" cy="${y(s.zt).toFixed(1)}" r="5" fill="${c}" stroke="#fff" stroke-width="1.5"><title>St ${esc(s.st)} – ${esc(s.zt)} moh</title></circle>`+
+               `<text x="${x(i).toFixed(1)}" y="${(y(s.zt)-9).toFixed(1)}" font-size="10" text-anchor="middle" fill="#1c2330">${esc(s.st)}</text>`; }).join('');
+      document.getElementById('profile').setAttribute('viewBox',`0 0 ${W} ${H}`);
+      document.getElementById('profile').innerHTML =
+        `<path d="${area}" fill="rgba(20,86,184,.10)"/><path d="${line}" fill="none" stroke="#1456b8" stroke-width="2"/>${dots}`;
+      document.getElementById('profileLabels').innerHTML =
+        `<span>lav: ${mn.toFixed(0)} moh</span><span>høy: ${mx.toFixed(0)} moh</span>`;
+    })();
+
+    // ---------- SWOT ----------
+    const confList=stations.filter(s=>s.conflict).map(s=>'st'+s.st+'→hull '+s.holes.join('/')).join(', ');
+    const downList=stations.filter(s=>s.slope!=null&&s.slope<=-5&&!s.backstop).map(s=>'st'+s.st+' ('+Math.round(s.slope)+'°)').join(', ');
+    const swot=[
+      ['s-str','💪 Styrker',[
+        'Skyting parallelt med og samme vei som discgolf-kastet – ingen skyter mot der den andre går.',
+        nBack+' av '+stations.length+' stasjoner har <b>naturlig bakstopp</b> (terrenget stiger ≥3 m bak blink) som fanger overskyting.',
+        'Hele banen ligger innenfor eiendom 51/1 og 57/5; ingen skyting over/mot veg.',
+        'Avstander i hovedsak ≤ WA-grensa på 60 m; sonene følger WA overshoot-trakt (avstand/6).']],
+      ['s-wek','⚠️ Svakheter',[
+        (nConf?('<b>'+nConf+' stasjoner</b> har restkonflikt mot discgolf etter høydejustering: '+esc(confList)+'.'):'Ingen restkonflikt mot discgolf etter høydejustering.'),
+        'Bratt nedoverbakke uten bakstopp gir lengre pilbane: '+(downList?esc(downList):'ingen'),
+        'Delt areal forutsetter etikette/disiplin – samtidig fri bruk er ikke sikkert.']],
+      ['s-opp','🚀 Muligheter',[
+        'Tidsdeling/booking: bue og discgolf på ulike tider eller med utkikk/signal.',
+        'Flytt eller snu de få konfliktstasjonene noen meter til siden med best klaring.',
+        'Bruk terrenget aktivt – legg blink foran stigninger som naturlig bakstopp.',
+        'Sett opp nett/varsel bak de bratte nedoverbakkeskuddene (st12, st14).']],
+      ['s-thr','🌩️ Trusler',[
+        'Samtidig bruk uten signalering – discgolfer i sikkerhetssonen.',
+        'Lange nedoverbakkeskudd (st7, st12, st14) der pil kan bære langt forbi blink.',
+        'Feilskudd mot hytter i vest / veg i sør ved enkelte standplasser.',
+        'Tapte piler i terreng med allmenn ferdsel.']]
+    ];
+    document.getElementById('swot').innerHTML = swot.map(b=>
+      `<div class="${b[0]}"><h3>${b[1]}</h3><ul>${b[2].map(li=>'<li>'+li+'</li>').join('')}</ul></div>`).join('');
+
+    // ---------- per-target cards ----------
+    document.getElementById('targets').innerHTML = stations.map(s=>{
+      const dir=compass(s.brg), updown = s.slope==null?'':(s.slope>1?'oppover':s.slope<-1?'nedover':'flatt');
+      const problems=[], measures=[], strengths=[];
+      if(s.conflict){ problems.push('Sikkerhetssonen (±'+s.halfW.toFixed(1)+' m, '+Math.round(s.overshoot)+' m overskyting) <b>overlapper discgolf hull '+esc(s.holes.join(', '))+'</b>'+(s.kinds.length?' ('+esc(s.kinds.join(', '))+')':'')+'.');
+        measures.push('Tidsdele/signalere mot hull '+esc(s.holes.join(', '))+'; vurder å flytte standplass eller snu skuddretning noen grader.'); }
+      if(s.slope!=null && s.slope<=-5 && !s.backstop){ problems.push('Nedoverbakke '+Math.round(s.slope)+'° uten naturlig bakstopp – pil bærer lengre; faresone satt til '+Math.round(s.overshoot)+' m.');
+        measures.push('Sett opp bakstopp-nett/varsel; hold utløpet fritt for ferdsel.'); }
+      if(s.dist>=60){ problems.push('Langt skudd ('+s.dist.toFixed(0)+' m) → større sideveis spredning (±'+s.halfW.toFixed(1)+' m).'); }
+      if(!s.conflict && !(s.slope!=null&&s.slope<=-5&&!s.backstop) && s.dist<60) problems.push('Ingen vesentlige problemer identifisert.');
+      if(s.backstop){ strengths.push('Naturlig bakstopp ~'+s.backstop+' m bak blink (terreng stiger) demper overskyting.'); measures.push('Behold blinkplassering foran stigningen – terrenget er sikringen.'); }
+      if(s.slope!=null && s.slope>1) strengths.push('Skyter oppover ('+Math.round(s.slope)+'°) – kort pilutløp bak blink.');
+      const facts=[['Discgolf-hull', s.dgHole!=null?('hull '+s.dgHole):'–'],
+        ['Avstand', s.dist.toFixed(1)+' m'],
+        ['Retning', dir+' ('+Math.round(s.brg)+'°)'],
+        ['Høyde pel→blink', (s.zp!=null?s.zp:'?')+' → '+(s.zt!=null?s.zt:'?')+' moh'],
+        ['Helling', (s.slope!=null?(s.slope>0?'+':'')+s.slope+'° '+updown:'–')],
+        ['Bakstopp', s.backstop?('~'+s.backstop+' m'):'nei'],
+        ['Overskyting', Math.round(s.overshoot)+' m'],
+        ['Konflikt', s.conflict?('<span class="pill bad">hull '+esc(s.holes.join(', '))+'</span>'):'<span class="pill ok">ingen</span>']];
+      return `<div class="t lvl-${s.level}">
+        <div class="top"><b>Stasjon ${esc(s.st)}</b><span class="lvl">${s.level} risiko</span></div>
+        <div class="body">
+          <dl class="facts">${facts.map(f=>'<dt>'+esc(f[0])+'</dt><dd>'+f[1]+'</dd>').join('')}</dl>
+          <p style="margin:4px 0 0;font-size:13.5px">Skyter ${dir} (${Math.round(s.brg)}°), ${s.dist.toFixed(0)} m ${updown}${s.slope!=null?' '+Math.abs(Math.round(s.slope))+'°':''}. ${esc(s.note||'')}.</p>
+          ${strengths.length?'<h4>Styrker</h4><ul>'+strengths.map(x=>'<li>'+x+'</li>').join('')+'</ul>':''}
+          <h4>Mulige problemer</h4><ul>${problems.map(x=>'<li>'+x+'</li>').join('')}</ul>
+          ${measures.length?'<h4>Tiltak</h4><ul>'+measures.map(x=>'<li>'+x+'</li>').join('')+'</ul>':''}
+        </div></div>`;
+    }).join('');
+
+    document.getElementById('method').innerHTML =
+      'Sikkerhetssonene følger <b>World Archery</b> sin overshoot-trakt: trygg halvbredde = avstand ÷ 6 (min 5 m) ut fra skytepelen, '+
+      'med overskyting bak blink justert etter <b>Kartverkets høydedata (1 m DTM)</b> – kortet ned der terrenget stiger til naturlig bakstopp (≥3 m innen 50 m), '+
+      'forlenget på nedoverbakkeskudd. Konflikt = et discgolf-element (utkast, kurv eller fortettet fairway-punkt fra course.geojson) inne i sonen. '+
+      'Tallene regnes live fra geojson-filene, så siden følger redigeringer av banen.';
+    document.getElementById('foot').textContent =
+      'Generert fra birkebeineren-feltbane.geojson + course.geojson · WA-regelverk + Kartverket høydedata · '+stations.length+' stasjoner analysert.';
+  }).catch(e=>{ document.querySelector('main').innerHTML='<p style="color:#c0392b">Kunne ikke laste data: '+esc(e.message)+'</p>'; });
+  </script>
+</body>
+</html>
