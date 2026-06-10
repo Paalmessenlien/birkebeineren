@@ -400,6 +400,13 @@ function renderFeltLayer(fc) {
         className: 'shoot-arrow', html: '<i style="transform:rotate(' + brg + 'deg)"></i>',
         iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(group);
 
+      // Numbered target badge at the blink (the station/target number)
+      L.marker([tLat, tLng], { icon: L.divIcon({ className: 'bue-target-div',
+        html: '<div class="bue-target">' + esc(f.properties.station) + '</div>',
+        iconSize: [20, 20], iconAnchor: [10, 10] }) })
+        .bindPopup('<b>Mål ' + esc(f.properties.station) + '</b><br>' +
+          esc(f.properties.distance) + ' m · blink').addTo(group);
+
       // Station label at the lane midpoint, with an uphill/downhill slope badge
       const mid = [(sLat + tLat) / 2, (sLng + tLng) / 2];
       const sd = f.properties.slope_deg;
@@ -417,12 +424,6 @@ function renderFeltLayer(fc) {
 // Felt overlays are built only after the disc golf points are cached, so each
 // archery safety zone can be tested for conflicts against the disc golf course.
 dgReady.then(() => {
-  // Built-in proposal (carries its own safety polygons → no auto-funnels)
-  fetch('./fictive_field.geojson')
-    .then((r) => r.json())
-    .then((fc) => layersControl.addOverlay(renderFeltLayer(fc), 'Feltbane (forslag)'))
-    .catch(() => {/* fil mangler – hopp over */});
-
   // Birkebeineren feltbane (laget i editoren, lagret som fil)
   fetch('./birkebeineren-feltbane.geojson')
     .then((r) => r.json())

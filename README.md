@@ -34,44 +34,6 @@ en stasjon for å endre nummer/avstand eller slette.
 - **Lagring:** automatisk i nettleserens `localStorage` (per maskin/nettleser).
 - **Eksporter/Importer:** GeoJSON-fil, for backup eller flytting mellom maskiner.
 
-## Feltbane (forslag) – fiktiv bueskytingsbane sammen med discgolf
-
-`fictive_field.geojson` + laget **«Feltbane (forslag)»** er et sikkerhetsvurdert
-forslag til en 12-måls feltbane (World Archery field-prinsipp, markerte avstander
-≤ 60 m) som **deler løypa med discgolfbanen**.
-
-**Prinsipp:** Pilskyting skjer **parallelt med og i samme retning som
-discgolf-kastet** på hvert hull – begge aktiviteter beveger seg samme vei nedover
-løypa, så ingen skyter/kaster mot der den andre går. Sikkerheten ligger i
-**sideforskyvning**:
-
-- **Hele banen ligger innenfor eiendom 51/1 og 57/5** (sjekket mot Kartverkets
-  matrikkel-WMS, punkt for punkt langs hver korridor).
-- **Ingen skyting over eller mot vei** – korridor + overskytingssone holdes
-  innenfor eiendommene (vegen er eiendomsgrense), og langskuddet er vendt bort
-  fra hyttene i vest og vegen i sør.
-- Hver skytebane er lagt **~26 m til siden** for fairwayen, på siden med best
-  klaring. Minste laterale klaring til nærmeste discgolf-punkt: **13–22 m**
-  (i tillegg til forskyvningen).
-- **Gangrekkefølge optimalisert** (2-opt) for kortest gange – grønn stiplet
-  **gangrute** i kartet viser rekkefølgen 1→12 (≈1,3 km totalt).
-- **Start ved hull 4.** **Stasjon 12 ligger på hull 18s utkast og skyter samme
-  retning som hull 18 kastes (SW)** – innenfor 51/1 (klaring 9 m, banens
-  trangeste; krever god standplass-etikette).
-- Stasjon 11 er et **langskudd (60 m) i det åpne området under hull 16**, vendt
-  NNØ bort fra hyttene i vest og vegen i sør.
-- 12 mål på discgolfhull 4, 6, 7, 8, 9, 10, 12, 13, 14, 17, 18 + langskuddet –
-  kun innenfor 51/1 / 57/5. Avstander 30–60 m.
-- De røde korridorene er **sikkerhetssonene**; den grønne stiplete linja er gangruta.
-
-> Dette er et delt-areal-oppsett med *forvaltet* risiko: det forutsetter
-> etikette om at man bare skyter/kaster når den parallelle korridoren foran er
-> klar. Skal aktivitetene kunne foregå helt uavhengig samtidig, må de skilles
-> fysisk.
-
-Forslaget kan åpnes i `editor.html` (Importer → `fictive_field.geojson`) og
-justeres fritt.
-
 ## Sikkerhet (World Archery) – automatiske soner og konfliktsjekk
 
 For feltbane-filer **uten egne sikkerhetspolygoner** (f.eks.
